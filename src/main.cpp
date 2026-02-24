@@ -10,7 +10,7 @@ int main() {
 		const int WINDOW_WIDTH  = 800;
 		const int WINDOW_HEIGHT = 600;
 
-		Window window(WINDOW_WIDTH, WINDOW_HEIGHT, "Moving green point");
+		Window window(WINDOW_WIDTH, WINDOW_HEIGHT, "Little Green Man");
 		InputManager::init(window.getGLFWWindow());
 
 		Renderer    renderer(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -24,7 +24,7 @@ int main() {
 		window.setRenderCallback(
 		  [&renderer, &gameManager]() { gameManager.render(renderer); });
 
-		std::cout << "=== Moving green point ===" << std::endl;
+		std::cout << "=== Little Green Man ===" << std::endl;
 		std::cout << "Controls:" << std::endl;
 		std::cout << "  WASD - Move" << std::endl;
 		std::cout << "  Mouse Click - Shoot" << std::endl;

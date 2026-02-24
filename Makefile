@@ -13,7 +13,7 @@ format:
 
 # アプリケーションのビルド
 build:
-	cmake --preset=default
+	cmake --preset=vcpkg
 	cmake -S . -B build
 	cmake --build build
 	ln -sf build/compile_commands.json compile_commands.json
