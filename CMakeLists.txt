@@ -1,0 +1,30 @@
+cmake_minimum_required(VERSION 3.15)
+
+set(APP_NAME HelloWorld)
+project(${APP_NAME} LANGUAGES CXX)
+
+find_package(glfw3 CONFIG REQUIRED)
+find_package(glad CONFIG REQUIRED)
+find_package(glm CONFIG REQUIRED)
+
+# src内のすべての.cppファイルを取得
+file(GLOB_RECURSE SOURCES "src/*.cpp")
+
+add_executable(${APP_NAME} ${SOURCES})
+
+target_include_directories(${APP_NAME} 
+    PRIVATE 
+        ${CMAKE_SOURCE_DIR}/include
+)
+
+target_link_libraries(${APP_NAME}
+  PRIVATE
+    glfw
+    glad::glad
+    glm::glm
+)
+
+set_target_properties(${APP_NAME} PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED ON
+)

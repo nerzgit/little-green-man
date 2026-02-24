@@ -1,0 +1,21 @@
+# ビルド成果物
+build/
+out/
+
+# vcpkg インストール済みパッケージ
+vcpkg_installed/
+
+# CMake ユーザー固有プリセット（環境依存のパスが含まれるため）
+CMakeUserPresets.json
+
+# LSP 用ファイル（生成物）
+compile_commands.json
+.cache/
+
+# macOS
+.DS_Store
+*.dSYM/
+__MACOSX/
+
+# エディタ
+.vscode/
