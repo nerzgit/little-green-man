@@ -5,10 +5,13 @@
 #include <iostream>
 
 Texture::Texture(const std::string& path) : id(0), width(0), height(0) {
+	// Flip vertically to match OpenGL's coordinate system
 	stbi_set_flip_vertically_on_load(true);
 
 	int            channels;
 	unsigned char* data =
+	  // stbi_load returns data in RGBA format if the image has an alpha
+	  // channel, otherwise RGB
 	  stbi_load(path.c_str(), &width, &height, &channels, 0);
 
 	if (!data) {

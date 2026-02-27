@@ -2,7 +2,7 @@
 #include "../engine/input/InputManager.hpp"
 #include <GLFW/glfw3.h>
 
-Player::Player(glm::vec2 position) : Entity(position, 15.0f), speed(200.0f) {
+Player::Player(glm::vec2 position) : Entity(position, 32.0f), speed(400.0f) {
 }
 
 void Player::update(float deltaTime) {
