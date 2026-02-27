@@ -6,15 +6,17 @@ project(${APP_NAME} LANGUAGES CXX)
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
+find_package(Stb REQUIRED)
 
 # src内のすべての.cppファイルを取得
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 
 add_executable(${APP_NAME} ${SOURCES})
 
-target_include_directories(${APP_NAME} 
-    PRIVATE 
+target_include_directories(${APP_NAME}
+    PRIVATE
         ${CMAKE_SOURCE_DIR}/include
+        ${Stb_INCLUDE_DIR}
 )
 
 target_link_libraries(${APP_NAME}

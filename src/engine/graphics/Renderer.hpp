@@ -6,6 +6,7 @@
 // clang-format on
 
 #include "Shader.hpp"
+#include "Texture.hpp"
 #include <glm/glm.hpp>
 #include <memory>
 
@@ -15,19 +16,17 @@ public:
 	~Renderer();
 
 	void clear();
-	void drawCircle(const glm::vec2& position, float radius, float r, float g,
-	                float b);
-	void drawRect(const glm::vec2& position, float width, float height, float r,
-	              float g, float b);
+	void drawSprite(const Texture& texture, const glm::vec2& position,
+	                float width, float height);
 
 private:
 	int                     windowWidth_;
 	int                     windowHeight_;
-	std::unique_ptr<Shader> shader_;
-	GLuint                  VAO_, VBO_;
+	std::unique_ptr<Shader> textureShader_;
+	GLuint                  textureVAO_, textureVBO_;
 
-	void initShader();
-	void initBuffers();
+	void initTextureShader();
+	void initTextureBuffers();
 };
 
 #endif // RENDERER_HPP

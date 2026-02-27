@@ -2,6 +2,7 @@
 #define GAME_MANAGER_HPP
 
 #include "../engine/graphics/Renderer.hpp"
+#include "../engine/graphics/Texture.hpp"
 #include "Player.hpp"
 #include <memory>
 
@@ -13,9 +14,10 @@ public:
 	void render(Renderer& renderer);
 
 private:
-	int                     windowWidth_;
-	int                     windowHeight_;
-	std::unique_ptr<Player> player_;
+	int                       windowWidth_;
+	int                       windowHeight_;
+	std::unique_ptr<Player>   player_;
+	std::unique_ptr<Texture>  playerTexture_;
 
 	void updatePlayer(float deltaTime);
 };
