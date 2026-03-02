@@ -18,10 +18,12 @@ public:
 	void clear();
 	void drawSprite(const Texture& texture, const glm::vec2& position,
 	                float width, float height);
+	void setCamera(const glm::vec2& cameraPos);
 
 private:
 	int                     windowWidth_;
 	int                     windowHeight_;
+	float                   zoom_;
 	std::unique_ptr<Shader> textureShader_;
 	GLuint                  textureVAO_, textureVBO_;
 

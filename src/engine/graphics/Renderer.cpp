@@ -51,8 +51,23 @@ void Renderer::initTextureShader() {
 	textureShader_ = std::make_unique<Shader>(textureVertexShaderSource,
 	                                          textureFragmentShaderSource);
 
-	glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(windowWidth_),
-	                                  static_cast<float>(windowHeight_), 0.0f);
+	zoom_ = 2.0f;
+
+	float viewW = static_cast<float>(windowWidth_) * zoom_;
+	float viewH = static_cast<float>(windowHeight_) * zoom_;
+
+	glm::mat4 projection = glm::ortho(0.0f, viewW, viewH, 0.0f);
+
+	textureShader_->use();
+	textureShader_->setMat4("projection", projection);
+}
+
+void Renderer::setCamera(const glm::vec2& cameraPos) {
+	float viewW = static_cast<float>(windowWidth_) * zoom_;
+	float viewH = static_cast<float>(windowHeight_) * zoom_;
+
+	glm::mat4 projection = glm::ortho(cameraPos.x, cameraPos.x + viewW,
+	                                  cameraPos.y + viewH, cameraPos.y);
 
 	textureShader_->use();
 	textureShader_->setMat4("projection", projection);

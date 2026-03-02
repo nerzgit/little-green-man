@@ -5,13 +5,8 @@
 #include <iostream>
 
 Texture::Texture(const std::string& path) : id(0), width(0), height(0) {
-	// Flip vertically to match OpenGL's coordinate system
-	stbi_set_flip_vertically_on_load(true);
-
 	int            channels;
 	unsigned char* data =
-	  // stbi_load returns data in RGBA format if the image has an alpha
-	  // channel, otherwise RGB
 	  stbi_load(path.c_str(), &width, &height, &channels, 0);
 
 	if (!data) {
@@ -26,12 +21,11 @@ Texture::Texture(const std::string& path) : id(0), width(0), height(0) {
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format,
 	             GL_UNSIGNED_BYTE, data);
-	glGenerateMipmap(GL_TEXTURE_2D);
 
 	stbi_image_free(data);
 	glBindTexture(GL_TEXTURE_2D, 0);
