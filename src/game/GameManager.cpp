@@ -1,5 +1,6 @@
 #include "GameManager.hpp"
 
+#include "../engine/graphics/FontAtlas.hpp"
 #include "../engine/graphics/Renderer.hpp"
 #include "camera/Camera.hpp"
 #include "map/world1/Map1_1.hpp"
@@ -22,6 +23,9 @@ GameManager::GameManager(int windowWidth, int windowHeight)
 
 	camera_ = std::make_unique<Camera>(*player_, windowWidth, windowHeight,
 	                                   stageWidth, stageHeight);
+
+	font_ = std::make_unique<FontAtlas>("assets/fonts/PixelMplus12-Regular.ttf",
+	                                    12.0f, 2048);
 }
 
 GameManager::~GameManager() = default;
@@ -42,4 +46,9 @@ void GameManager::render(Renderer& renderer) {
 	if (player_->active) {
 		player_->draw(renderer);
 	}
+
+	renderer.drawTextHUD(*font_,
+	                     "やあ 僕はnerzgitによってうみだされたんだけど これか"
+	                     "らどうなっていくのかまだわからないんだ",
+	                     glm::vec2(8, 20), 1.0f);
 }

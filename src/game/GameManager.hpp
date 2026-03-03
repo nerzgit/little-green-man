@@ -5,6 +5,7 @@
 
 class Camera;
 class CollisionResolver;
+class FontAtlas;
 class Map;
 class Player;
 class Renderer;
@@ -25,6 +26,7 @@ private:
 	std::unique_ptr<Map>               currentMap_;
 	std::unique_ptr<CollisionResolver> collision_;
 	std::unique_ptr<Camera>            camera_;
+	std::unique_ptr<FontAtlas>         font_;
 };
 
 #endif // GAME_MANAGER_HPP
