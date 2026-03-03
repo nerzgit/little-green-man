@@ -1,7 +1,7 @@
 #ifndef PLAYER_HPP
 #define PLAYER_HPP
 
-#include "../engine/core/Entity.hpp"
+#include "../../engine/core/Entity.hpp"
 #include <memory>
 
 class AnimatedSprite;
@@ -16,6 +16,7 @@ public:
 	~Player();
 
 	void           update(float deltaTime) override;
+	void           draw(Renderer& renderer);
 	void           handleInput(float deltaTime);
 	const Texture& getSprite() const;
 

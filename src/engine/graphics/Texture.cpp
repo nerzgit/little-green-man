@@ -53,6 +53,13 @@ Texture::~Texture() {
 	}
 }
 
+void Texture::update(const unsigned char* rgba) {
+	glBindTexture(GL_TEXTURE_2D, id);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA,
+	                GL_UNSIGNED_BYTE, rgba);
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 void Texture::bind(GLuint unit) const {
 	glActiveTexture(GL_TEXTURE0 + unit);
 	glBindTexture(GL_TEXTURE_2D, id);

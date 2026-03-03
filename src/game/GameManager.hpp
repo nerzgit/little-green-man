@@ -1,9 +1,11 @@
 #ifndef GAME_MANAGER_HPP
 #define GAME_MANAGER_HPP
 
-#include <glm/glm.hpp>
 #include <memory>
 
+class Camera;
+class CollisionResolver;
+class Map;
 class Player;
 class Renderer;
 
@@ -19,13 +21,13 @@ private:
 	static constexpr float kStageWidth  = 1600.0f;
 	static constexpr float kStageHeight = 1200.0f;
 
-	int                     windowWidth_;
-	int                     windowHeight_;
-	glm::vec2               cameraPos_{0.0f, 0.0f};
-	std::unique_ptr<Player> player_;
+	int windowWidth_;
+	int windowHeight_;
 
-	void updatePlayer(float deltaTime);
-	void updateCamera(Renderer& renderer);
+	std::unique_ptr<Player>            player_;
+	std::unique_ptr<Map>               currentMap_;
+	std::unique_ptr<CollisionResolver> collision_;
+	std::unique_ptr<Camera>            camera_;
 };
 
 #endif // GAME_MANAGER_HPP

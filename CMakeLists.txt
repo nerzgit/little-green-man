@@ -6,6 +6,7 @@ project(${APP_NAME} LANGUAGES CXX)
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
+find_package(OpenAL CONFIG REQUIRED)
 find_package(Stb REQUIRED)
 
 # src内のすべての.cppファイルを取得
@@ -24,6 +25,7 @@ target_link_libraries(${APP_NAME}
     glfw
     glad::glad
     glm::glm
+    OpenAL::OpenAL
 )
 
 set_target_properties(${APP_NAME} PROPERTIES

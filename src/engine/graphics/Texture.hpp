@@ -18,6 +18,7 @@ public:
 	~Texture();
 
 	void bind(GLuint unit = 0) const;
+	void update(const unsigned char* rgba);
 };
 
 #endif // TEXTURE_HPP
