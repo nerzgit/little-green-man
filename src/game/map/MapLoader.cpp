@@ -57,3 +57,9 @@ bool MapLoader::isWallAt(float x, float y) const {
 	int row = static_cast<int>(y / kTileSize);
 	return getTile(col, row) == TileType::WALL;
 }
+
+bool MapLoader::isTriggerAt(float x, float y) const {
+	int col = static_cast<int>(x / kTileSize);
+	int row = static_cast<int>(y / kTileSize);
+	return getTile(col, row) == TileType::TRIGGER;
+}

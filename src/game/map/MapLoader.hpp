@@ -4,11 +4,7 @@
 #include <string>
 #include <vector>
 
-enum class TileType {
-	EMPTY,
-	WALL,
-	PLAYER_SPAWN,
-};
+enum class TileType { EMPTY, WALL, PLAYER_SPAWN, TRIGGER };
 
 class MapLoader {
 public:
@@ -21,6 +17,7 @@ public:
 
 	TileType getTile(int col, int row) const;
 	bool     isWallAt(float x, float y) const;
+	bool     isTriggerAt(float x, float y) const;
 	int      getWidth() const {
         return width_;
 	}
