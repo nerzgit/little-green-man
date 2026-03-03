@@ -6,8 +6,12 @@
 
 Camera::Camera(const Player& player, int windowWidth, int windowHeight,
                float stageWidth, float stageHeight)
-    : player_(player), windowWidth_(windowWidth), windowHeight_(windowHeight),
-      stageWidth_(stageWidth), stageHeight_(stageHeight) {}
+    : player_(player)
+    , windowWidth_(windowWidth)
+    , windowHeight_(windowHeight)
+    , stageWidth_(stageWidth)
+    , stageHeight_(stageHeight) {
+}
 
 void Camera::apply(Renderer& renderer) {
 	constexpr float zoom  = 2.0f;

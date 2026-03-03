@@ -8,9 +8,11 @@ Map1_1::Map1_1() {
 
 Map1_1::~Map1_1() = default;
 
-void Map1_1::onStart() {}
+void Map1_1::onStart() {
+}
 
-void Map1_1::onUpdate(float deltaTime) {}
+void Map1_1::onUpdate(float deltaTime) {
+}
 
 void Map1_1::onDraw(Renderer& renderer) {
 	const float ts = MapLoader::kTileSize;

@@ -18,9 +18,6 @@ public:
 	void render(Renderer& renderer);
 
 private:
-	static constexpr float kStageWidth  = 1600.0f;
-	static constexpr float kStageHeight = 1200.0f;
-
 	int windowWidth_;
 	int windowHeight_;
 

@@ -12,7 +12,9 @@ public:
 	AudioClip(const AudioClip&)            = delete;
 	AudioClip& operator=(const AudioClip&) = delete;
 
-	ALuint getBuffer() const { return buffer_; }
+	ALuint getBuffer() const {
+		return buffer_;
+	}
 
 private:
 	ALuint buffer_;

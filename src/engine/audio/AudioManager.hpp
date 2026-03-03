@@ -11,7 +11,8 @@ public:
 	static void init();
 	static void shutdown();
 
-	static void play(const AudioClip& clip, float volume = 1.0f, bool loop = false);
+	static void play(const AudioClip& clip, float volume = 1.0f,
+	                 bool loop = false);
 	static void stopAll();
 
 private:

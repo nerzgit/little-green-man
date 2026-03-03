@@ -11,12 +11,18 @@ public:
 	Map();
 	virtual ~Map();
 
-	virtual void onStart() {}
-	virtual void onUpdate(float deltaTime) {}
-	virtual void onDraw(Renderer& renderer) {}
-	virtual void onEnd() {}
+	virtual void onStart() {
+	}
+	virtual void onUpdate(float deltaTime) {
+	}
+	virtual void onDraw(Renderer& renderer) {
+	}
+	virtual void onEnd() {
+	}
 
-	bool isWallAt(float x, float y) const;
+	bool  isWallAt(float x, float y) const;
+	float getPixelWidth() const;
+	float getPixelHeight() const;
 
 protected:
 	std::unique_ptr<MapLoader> mapLoader_;

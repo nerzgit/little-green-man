@@ -12,33 +12,44 @@ Player::Player(glm::vec2 position) : Entity(position, 32.0f), speed(400.0f) {
 
 	Animation idle;
 	idle.frameDuration = 1.0f;
-	idle.frames.push_back(std::make_shared<Texture>("assets/characters/player/char_1.png"));
-	idle.frames.push_back(std::make_shared<Texture>("assets/characters/player/char_2.png"));
-	idle.frames.push_back(std::make_shared<Texture>("assets/characters/player/char_3.png"));
+	idle.frames.push_back(
+	  std::make_shared<Texture>("assets/characters/player/char_1.png"));
+	idle.frames.push_back(
+	  std::make_shared<Texture>("assets/characters/player/char_2.png"));
+	idle.frames.push_back(
+	  std::make_shared<Texture>("assets/characters/player/char_3.png"));
 	sprite_->addAnimation("idle", std::move(idle));
 
 	Animation walkRight;
 	walkRight.frameDuration = 0.1f;
-	walkRight.frames.push_back(std::make_shared<Texture>("assets/characters/player/char_1.png"));
-	walkRight.frames.push_back(std::make_shared<Texture>("assets/characters/player/char_3.png"));
+	walkRight.frames.push_back(
+	  std::make_shared<Texture>("assets/characters/player/char_1.png"));
+	walkRight.frames.push_back(
+	  std::make_shared<Texture>("assets/characters/player/char_3.png"));
 	sprite_->addAnimation("walk_right", std::move(walkRight));
 
 	Animation walkLeft;
 	walkLeft.frameDuration = 0.1f;
-	walkLeft.frames.push_back(std::make_shared<Texture>("assets/characters/player/char_1.png"));
-	walkLeft.frames.push_back(std::make_shared<Texture>("assets/characters/player/char_2.png"));
+	walkLeft.frames.push_back(
+	  std::make_shared<Texture>("assets/characters/player/char_1.png"));
+	walkLeft.frames.push_back(
+	  std::make_shared<Texture>("assets/characters/player/char_2.png"));
 	sprite_->addAnimation("walk_left", std::move(walkLeft));
 
 	Animation walkUp;
 	walkUp.frameDuration = 0.1f;
-	walkUp.frames.push_back(std::make_shared<Texture>("assets/characters/player/char_2.png"));
-	walkUp.frames.push_back(std::make_shared<Texture>("assets/characters/player/char_3.png"));
+	walkUp.frames.push_back(
+	  std::make_shared<Texture>("assets/characters/player/char_2.png"));
+	walkUp.frames.push_back(
+	  std::make_shared<Texture>("assets/characters/player/char_3.png"));
 	sprite_->addAnimation("walk_up", std::move(walkUp));
 
 	Animation walkDown;
 	walkDown.frameDuration = 0.1f;
-	walkDown.frames.push_back(std::make_shared<Texture>("assets/characters/player/char_3.png"));
-	walkDown.frames.push_back(std::make_shared<Texture>("assets/characters/player/char_1.png"));
+	walkDown.frames.push_back(
+	  std::make_shared<Texture>("assets/characters/player/char_3.png"));
+	walkDown.frames.push_back(
+	  std::make_shared<Texture>("assets/characters/player/char_1.png"));
 	sprite_->addAnimation("walk_down", std::move(walkDown));
 
 	sprite_->play("idle");

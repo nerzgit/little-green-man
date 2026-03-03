@@ -49,10 +49,10 @@ bool AudioClip::loadWav(const std::string& path, ALuint buffer) {
 		return false;
 	}
 
-	if (strncmp(header.riff, "RIFF", 4) != 0 ||
-	    strncmp(header.wave, "WAVE", 4) != 0 ||
-	    strncmp(header.fmt, "fmt ", 4) != 0 ||
-	    header.audioFormat != 1) { // 1 = PCM
+	if (strncmp(header.riff, "RIFF", 4) != 0
+	    || strncmp(header.wave, "WAVE", 4) != 0
+	    || strncmp(header.fmt, "fmt ", 4) != 0
+	    || header.audioFormat != 1) { // 1 = PCM
 		fclose(file);
 		return false;
 	}
@@ -63,7 +63,7 @@ bool AudioClip::loadWav(const std::string& path, ALuint buffer) {
 	}
 
 	// dataチャンクを探す
-	char    chunkId[4];
+	char     chunkId[4];
 	uint32_t chunkSize = 0;
 	while (fread(chunkId, 1, 4, file) == 4) {
 		if (fread(&chunkSize, 4, 1, file) != 1) {
@@ -90,9 +90,11 @@ bool AudioClip::loadWav(const std::string& path, ALuint buffer) {
 
 	ALenum format = AL_NONE;
 	if (header.channels == 1) {
-		format = (header.bitsPerSample == 16) ? AL_FORMAT_MONO16 : AL_FORMAT_MONO8;
+		format =
+		  (header.bitsPerSample == 16) ? AL_FORMAT_MONO16 : AL_FORMAT_MONO8;
 	} else if (header.channels == 2) {
-		format = (header.bitsPerSample == 16) ? AL_FORMAT_STEREO16 : AL_FORMAT_STEREO8;
+		format =
+		  (header.bitsPerSample == 16) ? AL_FORMAT_STEREO16 : AL_FORMAT_STEREO8;
 	}
 
 	if (format == AL_NONE) {

@@ -14,11 +14,14 @@ GameManager::GameManager(int windowWidth, int windowHeight)
 	player_ = std::make_unique<Player>(
 	  glm::vec2(windowWidth / 2.0f, windowHeight / 2.0f));
 
-	collision_ = std::make_unique<CollisionResolver>(
-	  *player_, *currentMap_, kStageWidth, kStageHeight);
+	const float stageWidth  = currentMap_->getPixelWidth();
+	const float stageHeight = currentMap_->getPixelHeight();
 
-	camera_ = std::make_unique<Camera>(
-	  *player_, windowWidth, windowHeight, kStageWidth, kStageHeight);
+	collision_ = std::make_unique<CollisionResolver>(*player_, *currentMap_,
+	                                                 stageWidth, stageHeight);
+
+	camera_ = std::make_unique<Camera>(*player_, windowWidth, windowHeight,
+	                                   stageWidth, stageHeight);
 }
 
 GameManager::~GameManager() = default;

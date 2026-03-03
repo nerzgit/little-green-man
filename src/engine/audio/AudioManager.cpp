@@ -4,8 +4,8 @@
 
 #include <stdexcept>
 
-ALCdevice*  AudioManager::device_              = nullptr;
-ALCcontext* AudioManager::context_             = nullptr;
+ALCdevice*  AudioManager::device_               = nullptr;
+ALCcontext* AudioManager::context_              = nullptr;
 ALuint      AudioManager::sources_[kMaxSources] = {};
 
 void AudioManager::init() {
@@ -16,7 +16,8 @@ void AudioManager::init() {
 
 	context_ = alcCreateContext(device_, nullptr);
 	if (!context_ || !alcMakeContextCurrent(context_)) {
-		throw std::runtime_error("AudioManager: failed to create audio context");
+		throw std::runtime_error(
+		  "AudioManager: failed to create audio context");
 	}
 
 	alGenSources(kMaxSources, sources_);

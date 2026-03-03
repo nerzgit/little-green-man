@@ -7,8 +7,11 @@
 
 CollisionResolver::CollisionResolver(Player& player, Map& map, float stageWidth,
                                      float stageHeight)
-    : player_(player), map_(map), stageWidth_(stageWidth),
-      stageHeight_(stageHeight) {}
+    : player_(player)
+    , map_(map)
+    , stageWidth_(stageWidth)
+    , stageHeight_(stageHeight) {
+}
 
 void CollisionResolver::resolve() {
 	const float ts  = MapLoader::kTileSize;
