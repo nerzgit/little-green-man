@@ -11,11 +11,11 @@ class Texture;
 class FontAtlas {
 public:
 	struct Glyph {
-		glm::vec2 uvMin;    // アトラス内のUV左上
-		glm::vec2 uvMax;    // アトラス内のUV右下
-		glm::vec2 size;     // グリフのピクセルサイズ
-		glm::vec2 bearing;  // カーソル位置からのオフセット (xoff, yoff)
-		float     advance;  // 次の文字へのカーソル送り量
+		glm::vec2 uvMin;   // アトラス内のUV左上
+		glm::vec2 uvMax;   // アトラス内のUV右下
+		glm::vec2 size;    // グリフのピクセルサイズ
+		glm::vec2 bearing; // カーソル位置からのオフセット (xoff, yoff)
+		float     advance; // 次の文字へのカーソル送り量
 	};
 
 	// fontPath : TTFファイルパス
@@ -23,10 +23,16 @@ public:
 	// atlasSize: アトラステクスチャの一辺のサイズ（2の累乗推奨）
 	FontAtlas(const std::string& fontPath, float fontSize, int atlasSize = 512);
 
-	const Texture& getTexture() const { return *texture_; }
-	const Glyph*   getGlyph(uint32_t codepoint) const;
-	float          getLineHeight() const { return lineHeight_; }
-	float          getFontSize() const { return fontSize_; }
+	const Texture& getTexture() const {
+		return *texture_;
+	}
+	const Glyph* getGlyph(uint32_t codepoint) const;
+	float        getLineHeight() const {
+        return lineHeight_;
+	}
+	float getFontSize() const {
+		return fontSize_;
+	}
 
 private:
 	std::unique_ptr<Texture>            texture_;

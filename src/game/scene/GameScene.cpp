@@ -4,7 +4,6 @@
 #include "../../engine/graphics/Renderer.hpp"  // glad を GLFW より先に
 #include "../../engine/input/InputManager.hpp" // GLFW/glfw3.h
 #include "../camera/Camera.hpp"
-#include "../enemy/Enemy.hpp"
 #include "../map/world1/Map1_1.hpp"
 #include "../physics/CollisionResolver.hpp"
 #include "../player/Player.hpp"
@@ -27,7 +26,7 @@ GameScene::~GameScene() = default;
 
 void GameScene::loadMap(std::unique_ptr<Map> newMap) {
 	currentMap_ = std::move(newMap);
-	currentMap_->onStart();
+	currentMap_->start();
 
 	// プレイヤーをスポーン位置に移動
 	player_->position = currentMap_->getPlayerSpawnPosition();
@@ -40,11 +39,6 @@ void GameScene::loadMap(std::unique_ptr<Map> newMap) {
 	                                                 stageWidth, stageHeight);
 	camera_    = std::make_unique<Camera>(*player_, windowWidth_, windowHeight_,
 	                                      stageWidth, stageHeight);
-
-	enemies_.clear();
-	for (const auto& pos : currentMap_->getEnemySpawnPositions()) {
-		enemies_.push_back(std::make_unique<Enemy>(pos, 150.0f));
-	}
 }
 
 void GameScene::update(float deltaTime, SceneManager& sm) {
@@ -58,24 +52,17 @@ void GameScene::update(float deltaTime, SceneManager& sm) {
 	player_->update(deltaTime);
 	collision_->resolve();
 
-	// トリガータイルに乗ったら次のマップへ
-	if (currentMap_->isTriggerAt(player_->position.x, player_->position.y)) {
-		auto nextMap = currentMap_->createNextMap();
-		if (nextMap) {
-			loadMap(std::move(nextMap));
-			return;
+	switch (currentMap_->update(deltaTime, *player_)) {
+	case MapEvent::NextMap:
+		if (auto next = currentMap_->createNextMap()) {
+			loadMap(std::move(next));
 		}
-	}
-
-	// 敵の更新とプレイヤーとの当たり判定
-	for (auto& enemy : enemies_) {
-		enemy->update(deltaTime);
-
-		if (player_->intersects(*enemy)) {
-			sm.switchTo(std::make_unique<GameOverScene>(sm.getWindowWidth(),
-			                                            sm.getWindowHeight()));
-			return;
-		}
+		return;
+	case MapEvent::PlayerDead:
+		sm.switchTo(std::make_unique<GameOverScene>(sm.getWindowWidth(),
+		                                            sm.getWindowHeight()));
+		return;
+	case MapEvent::None: break;
 	}
 }
 
@@ -84,19 +71,10 @@ void GameScene::render(Renderer& renderer) {
 	renderer.clear();
 
 	if (currentMap_) {
-		currentMap_->onDraw(renderer);
-	}
-
-	for (auto& enemy : enemies_) {
-		enemy->draw(renderer);
+		currentMap_->draw(renderer);
 	}
 
 	if (player_->active) {
 		player_->draw(renderer);
 	}
-
-	renderer.drawTextHUD(*font_,
-	                     "やあ 僕はnerzgitによってうみだされたんだけど これか"
-	                     "らどうなっていくのかまだわからないんだ",
-	                     glm::vec2(8, 20), 0.5f);
 }

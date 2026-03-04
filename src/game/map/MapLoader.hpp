@@ -40,7 +40,7 @@ private:
 	int                                height_         = 0;
 	int                                playerSpawnCol_ = 0;
 	int                                playerSpawnRow_ = 0;
-	std::vector<std::pair<int, int>>   enemySpawns_;  // {col, row}
+	std::vector<std::pair<int, int>>   enemySpawns_; // {col, row}
 };
 
 #endif // MAP_LOADER_HPP

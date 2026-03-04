@@ -3,11 +3,9 @@
 
 #include "Scene.hpp"
 #include <memory>
-#include <vector>
 
 class Camera;
 class CollisionResolver;
-class Enemy;
 class FontAtlas;
 class Map;
 class Player;
@@ -32,8 +30,6 @@ private:
 	std::unique_ptr<CollisionResolver> collision_;
 	std::unique_ptr<Camera>            camera_;
 	std::unique_ptr<FontAtlas>         font_;
-
-	std::vector<std::unique_ptr<Enemy>> enemies_;
 };
 
 #endif // GAME_SCENE_HPP

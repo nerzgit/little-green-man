@@ -1,8 +1,8 @@
 #ifndef TITLE_SCREEN_HPP
 #define TITLE_SCREEN_HPP
 
-#include "Scene.hpp"
 #include "../../engine/graphics/FontAtlas.hpp"
+#include "Scene.hpp"
 #include <memory>
 #include <string>
 #include <vector>

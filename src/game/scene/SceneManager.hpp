@@ -16,15 +16,19 @@ public:
 	void update(float deltaTime);
 	void render(Renderer& renderer);
 
-	int getWindowWidth() const { return windowWidth_; }
-	int getWindowHeight() const { return windowHeight_; }
+	int getWindowWidth() const {
+		return windowWidth_;
+	}
+	int getWindowHeight() const {
+		return windowHeight_;
+	}
 
 private:
 	int windowWidth_;
 	int windowHeight_;
 
 	std::unique_ptr<Scene> current_;
-	std::unique_ptr<Scene> next_;  // 予約済みの次シーン
+	std::unique_ptr<Scene> next_; // 予約済みの次シーン
 };
 
 #endif // SCENE_MANAGER_HPP

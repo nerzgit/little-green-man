@@ -1,7 +1,7 @@
 #include "SplashScreen.hpp"
 
 #include "../../engine/graphics/Renderer.hpp"  // glad を GLFW より先に
-#include "../../engine/input/InputManager.hpp"  // GLFW/glfw3.h
+#include "../../engine/input/InputManager.hpp" // GLFW/glfw3.h
 #include "SceneManager.hpp"
 #include "TitleScreen.hpp"
 
@@ -9,8 +9,8 @@
 
 SplashScreen::SplashScreen(int windowWidth, int windowHeight)
     : windowWidth_(windowWidth), windowHeight_(windowHeight) {
-	font_ = std::make_unique<FontAtlas>(
-	  "assets/fonts/PixelMplus12-Regular.ttf", 24.0f, 2048);
+	font_ = std::make_unique<FontAtlas>("assets/fonts/PixelMplus12-Regular.ttf",
+	                                    24.0f, 2048);
 }
 
 void SplashScreen::update(float deltaTime, SceneManager& sm) {
@@ -49,8 +49,8 @@ void SplashScreen::render(Renderer& renderer) {
 
 	// スキップヒント
 	renderer.drawTextHUD(*font_, "SPACE でスキップ",
-	                     glm::vec2(cx - 90.0f, windowHeight_ - 30.0f),
-	                     0.8f, glm::vec3(0.5f * alpha, 0.5f * alpha, 0.5f * alpha));
+	                     glm::vec2(cx - 90.0f, windowHeight_ - 30.0f), 0.8f,
+	                     glm::vec3(0.5f * alpha, 0.5f * alpha, 0.5f * alpha));
 }
 
 void SplashScreen::goNext(SceneManager& sm) {

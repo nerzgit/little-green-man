@@ -36,8 +36,8 @@ Renderer::Renderer(int windowWidth, int windowHeight)
 	initTextureShader();
 	initTextureBuffers();
 
-	const unsigned char white[4] = { 255, 255, 255, 255 };
-	whiteTexture_ = std::make_unique<Texture>(1, 1, white);
+	const unsigned char white[4] = {255, 255, 255, 255};
+	whiteTexture_                = std::make_unique<Texture>(1, 1, white);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -130,7 +130,7 @@ void Renderer::drawSprite(const Texture& texture, const glm::vec2& position,
 }
 
 void Renderer::drawRect(const glm::vec2& position, float width, float height,
-                         const glm::vec3& color) {
+                        const glm::vec3& color) {
 	float halfWidth  = width / 2.0f;
 	float halfHeight = height / 2.0f;
 
@@ -157,7 +157,7 @@ void Renderer::drawRect(const glm::vec2& position, float width, float height,
 }
 
 void Renderer::drawGlyphQuad(const Texture& texture, glm::vec2 topLeft,
-                              glm::vec2 size, glm::vec2 uvMin, glm::vec2 uvMax) {
+                             glm::vec2 size, glm::vec2 uvMin, glm::vec2 uvMax) {
 	float vertices[] = {
 	  topLeft.x,          topLeft.y,          uvMin.x, uvMin.y,
 	  topLeft.x + size.x, topLeft.y,          uvMax.x, uvMin.y,
@@ -181,7 +181,8 @@ void Renderer::drawGlyphQuad(const Texture& texture, glm::vec2 topLeft,
 // UTF-8 文字列から次の codepoint を取得し、ポインタを進める
 static uint32_t nextCodepoint(const char*& p) {
 	auto c = static_cast<unsigned char>(*p++);
-	if (c < 0x80) return c;
+	if (c < 0x80)
+		return c;
 	if ((c & 0xE0) == 0xC0) {
 		return ((c & 0x1F) << 6) | (static_cast<unsigned char>(*p++) & 0x3F);
 	}
@@ -200,8 +201,8 @@ static uint32_t nextCodepoint(const char*& p) {
 }
 
 void Renderer::drawTextImpl(const FontAtlas& font, const std::string& utf8Text,
-                             const glm::vec2& position, float scale,
-                             const glm::vec3& color) {
+                            const glm::vec2& position, float scale,
+                            const glm::vec3& color) {
 	textureShader_->use();
 	textureShader_->setVec4("uColor", color.r, color.g, color.b, 1.0f);
 
@@ -211,15 +212,16 @@ void Renderer::drawTextImpl(const FontAtlas& font, const std::string& utf8Text,
 	while (*p) {
 		uint32_t cp = nextCodepoint(p);
 		if (cp == '\n') {
-			cursor.x  = position.x;
+			cursor.x = position.x;
 			cursor.y += font.getLineHeight() * scale;
 			continue;
 		}
 		const auto* g = font.getGlyph(cp);
-		if (!g) continue;
+		if (!g)
+			continue;
 
-		glm::vec2 topLeft = { cursor.x + g->bearing.x * scale,
-			                  cursor.y + g->bearing.y * scale };
+		glm::vec2 topLeft = {cursor.x + g->bearing.x * scale,
+		                     cursor.y + g->bearing.y * scale};
 		glm::vec2 size    = g->size * scale;
 
 		drawGlyphQuad(font.getTexture(), topLeft, size, g->uvMin, g->uvMax);
@@ -235,8 +237,8 @@ void Renderer::drawText(const FontAtlas& font, const std::string& utf8Text,
 }
 
 void Renderer::drawTextHUD(const FontAtlas& font, const std::string& utf8Text,
-                            const glm::vec2& screenPos, float scale,
-                            const glm::vec3& color) {
+                           const glm::vec2& screenPos, float scale,
+                           const glm::vec3& color) {
 	// HUD 用プロジェクション（ウィンドウピクセル座標）に切り替え
 	glm::mat4 hudProjection =
 	  glm::ortho(0.0f, static_cast<float>(windowWidth_),

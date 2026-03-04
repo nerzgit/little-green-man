@@ -14,7 +14,7 @@ int main() {
 		Window window(WINDOW_WIDTH, WINDOW_HEIGHT, "Little Green Man");
 		InputManager::init(window.getGLFWWindow());
 
-		Renderer    renderer(WINDOW_WIDTH, WINDOW_HEIGHT);
+		Renderer     renderer(WINDOW_WIDTH, WINDOW_HEIGHT);
 		SceneManager sceneManager(WINDOW_WIDTH, WINDOW_HEIGHT);
 
 		// 最初のシーンはスプラッシュ画面
@@ -26,13 +26,6 @@ int main() {
 
 		window.setRenderCallback(
 		  [&renderer, &sceneManager]() { sceneManager.render(renderer); });
-
-		std::cout << "=== Little Green Man ===" << std::endl;
-		std::cout << "Controls:" << std::endl;
-		std::cout << "  WASD - Move" << std::endl;
-		std::cout << "  Mouse Click - Shoot" << std::endl;
-		std::cout << "  ESC - Title へ戻る" << std::endl;
-		std::cout << "===================" << std::endl;
 
 		window.run();
 

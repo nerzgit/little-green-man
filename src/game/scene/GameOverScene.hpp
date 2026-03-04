@@ -1,8 +1,8 @@
 #ifndef GAME_OVER_SCENE_HPP
 #define GAME_OVER_SCENE_HPP
 
-#include "Scene.hpp"
 #include "../../engine/graphics/FontAtlas.hpp"
+#include "Scene.hpp"
 #include <memory>
 
 // ゲームオーバー画面。Enter でタイトルへ戻る。

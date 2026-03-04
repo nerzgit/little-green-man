@@ -1,5 +1,6 @@
 #include "Map1_1.hpp"
 
+#include "../../player/Player.hpp"
 #include "../MapLoader.hpp"
 #include "Map1_2.hpp"
 
@@ -9,25 +10,15 @@ Map1_1::Map1_1() {
 
 Map1_1::~Map1_1() = default;
 
-void Map1_1::onStart() {
-}
+MapEvent Map1_1::update(float deltaTime, Player& player) {
+	auto event = Map::update(deltaTime, player);
+	if (event != MapEvent::None)
+		return event;
 
-void Map1_1::onUpdate(float deltaTime) {
-}
-
-void Map1_1::onDraw(Renderer& renderer) {
-	const float ts = MapLoader::kTileSize;
-	for (int row = 0; row < mapLoader_->getHeight(); ++row) {
-		for (int col = 0; col < mapLoader_->getWidth(); ++col) {
-			if (mapLoader_->getTile(col, row) == TileType::WALL) {
-				glm::vec2 pos = {col * ts + ts / 2.0f, row * ts + ts / 2.0f};
-				wallBlock_.draw(renderer, pos);
-			}
-		}
+	if (isTriggerAt(player.position.x, player.position.y)) {
+		return MapEvent::NextMap;
 	}
-}
-
-void Map1_1::onEnd() {
+	return MapEvent::None;
 }
 
 std::unique_ptr<Map> Map1_1::createNextMap() {
