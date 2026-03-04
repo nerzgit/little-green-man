@@ -1,6 +1,7 @@
 #include "Map1_1.hpp"
 
 #include "../MapLoader.hpp"
+#include "Map1_2.hpp"
 
 Map1_1::Map1_1() {
 	mapLoader_->load("assets/maps/1-1.map");
@@ -27,5 +28,8 @@ void Map1_1::onDraw(Renderer& renderer) {
 }
 
 void Map1_1::onEnd() {
-	// TODO: ステージ終了後の処理
+}
+
+std::unique_ptr<Map> Map1_1::createNextMap() {
+	return std::make_unique<Map1_2>();
 }

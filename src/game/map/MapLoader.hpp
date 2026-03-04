@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-enum class TileType { EMPTY, WALL, PLAYER_SPAWN, TRIGGER };
+enum class TileType { EMPTY, WALL, PLAYER_SPAWN, TRIGGER, ENEMY_SPAWN };
 
 class MapLoader {
 public:
@@ -30,6 +30,9 @@ public:
 	int getPlayerSpawnRow() const {
 		return playerSpawnRow_;
 	}
+	const std::vector<std::pair<int, int>>& getEnemySpawns() const {
+		return enemySpawns_;
+	}
 
 private:
 	std::vector<std::vector<TileType>> tiles_;
@@ -37,6 +40,7 @@ private:
 	int                                height_         = 0;
 	int                                playerSpawnCol_ = 0;
 	int                                playerSpawnRow_ = 0;
+	std::vector<std::pair<int, int>>   enemySpawns_;  // {col, row}
 };
 
 #endif // MAP_LOADER_HPP

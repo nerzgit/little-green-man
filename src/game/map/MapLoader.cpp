@@ -1,5 +1,6 @@
 #include "MapLoader.hpp"
 
+#include <cstdio>
 #include <fstream>
 #include <stdexcept>
 
@@ -14,6 +15,7 @@ void MapLoader::load(const std::string& path) {
 	}
 
 	tiles_.clear();
+	enemySpawns_.clear();
 	width_          = 0;
 	height_         = 0;
 	playerSpawnCol_ = 0;
@@ -32,6 +34,11 @@ void MapLoader::load(const std::string& path) {
 				playerSpawnCol_ = col;
 				playerSpawnRow_ = row;
 				break;
+			case 'E':
+				tile = TileType::ENEMY_SPAWN;
+				enemySpawns_.emplace_back(col, row);
+				break;
+			case 'T': tile = TileType::TRIGGER; break;
 			default: tile = TileType::EMPTY; break;
 			}
 			tileRow.push_back(tile);

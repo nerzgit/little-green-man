@@ -67,11 +67,6 @@ void Window::run() {
 		float deltaTime   = currentTime - lastTime;
 		lastTime          = currentTime;
 
-		// 入力
-		if (glfwGetKey(window_, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-			glfwSetWindowShouldClose(window_, true);
-		}
-
 		// 更新コールバック
 		if (updateCallback_) {
 			updateCallback_(deltaTime);

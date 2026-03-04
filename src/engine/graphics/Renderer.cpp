@@ -36,6 +36,9 @@ Renderer::Renderer(int windowWidth, int windowHeight)
 	initTextureShader();
 	initTextureBuffers();
 
+	const unsigned char white[4] = { 255, 255, 255, 255 };
+	whiteTexture_ = std::make_unique<Texture>(1, 1, white);
+
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
@@ -115,6 +118,33 @@ void Renderer::drawSprite(const Texture& texture, const glm::vec2& position,
 	textureShader_->setVec4("uColor", 1.0f, 1.0f, 1.0f, 1.0f);
 	textureShader_->setInt("tex", 0);
 	texture.bind(0);
+
+	glBindVertexArray(textureVAO_);
+	glBindBuffer(GL_ARRAY_BUFFER, textureVBO_);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
+
+	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+}
+
+void Renderer::drawRect(const glm::vec2& position, float width, float height,
+                         const glm::vec3& color) {
+	float halfWidth  = width / 2.0f;
+	float halfHeight = height / 2.0f;
+
+	float vertices[] = {
+	  position.x - halfWidth, position.y - halfHeight, 0.0f, 0.0f,
+	  position.x + halfWidth, position.y - halfHeight, 1.0f, 0.0f,
+	  position.x + halfWidth, position.y + halfHeight, 1.0f, 1.0f,
+	  position.x - halfWidth, position.y + halfHeight, 0.0f, 1.0f,
+	};
+
+	textureShader_->use();
+	textureShader_->setVec4("uColor", color.r, color.g, color.b, 1.0f);
+	textureShader_->setInt("tex", 0);
+	whiteTexture_->bind(0);
 
 	glBindVertexArray(textureVAO_);
 	glBindBuffer(GL_ARRAY_BUFFER, textureVBO_);

@@ -1,7 +1,8 @@
 #include "engine/graphics/Renderer.hpp"
 #include "engine/input/InputManager.hpp"
 #include "engine/platform/window.hpp"
-#include "game/GameManager.hpp"
+#include "game/scene/SceneManager.hpp"
+#include "game/scene/SplashScreen.hpp"
 
 #include <iostream>
 
@@ -14,21 +15,23 @@ int main() {
 		InputManager::init(window.getGLFWWindow());
 
 		Renderer    renderer(WINDOW_WIDTH, WINDOW_HEIGHT);
-		GameManager gameManager(WINDOW_WIDTH, WINDOW_HEIGHT);
+		SceneManager sceneManager(WINDOW_WIDTH, WINDOW_HEIGHT);
 
-		// 更新コールバックを設定
+		// 最初のシーンはスプラッシュ画面
+		sceneManager.switchTo(
+		  std::make_unique<SplashScreen>(WINDOW_WIDTH, WINDOW_HEIGHT));
+
 		window.setUpdateCallback(
-		  [&gameManager](float deltaTime) { gameManager.update(deltaTime); });
+		  [&sceneManager](float deltaTime) { sceneManager.update(deltaTime); });
 
-		// 描画コールバックを設定
 		window.setRenderCallback(
-		  [&renderer, &gameManager]() { gameManager.render(renderer); });
+		  [&renderer, &sceneManager]() { sceneManager.render(renderer); });
 
 		std::cout << "=== Little Green Man ===" << std::endl;
 		std::cout << "Controls:" << std::endl;
 		std::cout << "  WASD - Move" << std::endl;
 		std::cout << "  Mouse Click - Shoot" << std::endl;
-		std::cout << "  ESC - Exit" << std::endl;
+		std::cout << "  ESC - Title へ戻る" << std::endl;
 		std::cout << "===================" << std::endl;
 
 		window.run();
