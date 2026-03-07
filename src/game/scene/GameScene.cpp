@@ -38,8 +38,7 @@ void GameScene::loadMap(std::unique_ptr<Map> newMap) {
 	collision_ = std::make_unique<CollisionResolver>(*player_, *currentMap_,
 	                                                 stageWidth, stageHeight);
 	camera_    = std::make_unique<Camera>(*player_, windowWidth_, windowHeight_,
-	                                      stageWidth, stageHeight,
-	                                      currentMap_->isCameraYLocked());
+	                                      stageWidth, stageHeight);
 }
 
 void GameScene::update(float deltaTime, SceneManager& sm) {
