@@ -38,7 +38,23 @@ MapEvent Map::update(float deltaTime, Player& player) {
 	return MapEvent::None;
 }
 
+void Map::setBackground(const std::string& path) {
+	background_ = std::make_unique<Texture>(path);
+}
+
+void Map::loadMap(const std::string& path) {
+	mapLoader_->load(path);
+}
+
 void Map::draw(Renderer& renderer) {
+	// 背景画像の描画
+	if (background_) {
+		renderer.drawSprite(
+		  *background_,
+		  glm::vec2(getPixelWidth() / 2.0f, getPixelHeight() / 2.0f),
+		  background_->width, background_->height);
+	}
+
 	// タイルの描画
 	const float ts = MapLoader::kTileSize;
 	for (int row = 0; row < mapLoader_->getHeight(); ++row) {

@@ -6,11 +6,13 @@
 #include "wall/GrayBlock.hpp"
 #include <glm/glm.hpp>
 #include <memory>
+#include <string>
 #include <vector>
 
 class MapLoader;
 class Renderer;
 class Player;
+class Texture;
 
 enum class MapEvent { None, NextMap, PlayerDead };
 
@@ -37,10 +39,16 @@ public:
 	}
 
 protected:
-	std::unique_ptr<MapLoader>          mapLoader_;
-	GrayBlock                           wallBlock_;
+	void setBackground(const std::string& path);
+	void loadMap(const std::string& path);
+
+	GrayBlock                                       wallBlock_;
+	std::unique_ptr<Texture>                        background_;
 	std::vector<std::unique_ptr<Enemy>>             enemies_;
 	std::vector<std::unique_ptr<CollisionResolver>> enemyResolvers_;
+
+private:
+	std::unique_ptr<MapLoader> mapLoader_;
 };
 
 #endif // MAP_HPP

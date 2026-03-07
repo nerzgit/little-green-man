@@ -1,11 +1,11 @@
 #include "Map1_1.hpp"
 
 #include "../../player/Player.hpp"
-#include "../MapLoader.hpp"
 #include "Map1_2.hpp"
 
 Map1_1::Map1_1() {
-	mapLoader_->load("assets/maps/1-1.map");
+	loadMap("assets/maps/1-1.map");
+	setBackground("assets/maps/1-1-bg.png");
 }
 
 Map1_1::~Map1_1() = default;
