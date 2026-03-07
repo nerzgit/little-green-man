@@ -4,8 +4,9 @@
 #include "Map1_2.hpp"
 
 Map1_1::Map1_1() {
-	loadMap("assets/maps/1-1.map");
-	setBackground("assets/maps/1-1-bg.png");
+	loadMap("assets/maps/1-1_地面.csv", TileType::EMPTY);
+	loadMap("assets/maps/1-1_障害物.csv", TileType::WALL);
+	loadTileset("assets/maps/[Base]BaseChip_pipo.png");
 }
 
 Map1_1::~Map1_1() = default;

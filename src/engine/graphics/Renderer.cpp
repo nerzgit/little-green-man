@@ -129,6 +129,33 @@ void Renderer::drawSprite(const Texture& texture, const glm::vec2& position,
 	glBindVertexArray(0);
 }
 
+void Renderer::drawTile(const Texture& texture, const glm::vec2& position,
+                         float width, float height,
+                         glm::vec2 uvMin, glm::vec2 uvMax) {
+	float halfWidth  = width / 2.0f;
+	float halfHeight = height / 2.0f;
+
+	float vertices[] = {
+	  position.x - halfWidth, position.y - halfHeight, uvMin.x, uvMin.y,
+	  position.x + halfWidth, position.y - halfHeight, uvMax.x, uvMin.y,
+	  position.x + halfWidth, position.y + halfHeight, uvMax.x, uvMax.y,
+	  position.x - halfWidth, position.y + halfHeight, uvMin.x, uvMax.y,
+	};
+
+	textureShader_->use();
+	textureShader_->setVec4("uColor", 1.0f, 1.0f, 1.0f, 1.0f);
+	textureShader_->setInt("tex", 0);
+	texture.bind(0);
+
+	glBindVertexArray(textureVAO_);
+	glBindBuffer(GL_ARRAY_BUFFER, textureVBO_);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
+	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+}
+
 void Renderer::drawRect(const glm::vec2& position, float width, float height,
                         const glm::vec3& color) {
 	float halfWidth  = width / 2.0f;

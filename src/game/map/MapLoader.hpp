@@ -6,6 +6,11 @@
 
 enum class TileType { EMPTY, WALL, PLAYER_SPAWN, TRIGGER, ENEMY_SPAWN };
 
+struct Tile {
+	int      id;
+	TileType type;
+};
+
 class MapLoader {
 public:
 	static constexpr float kTileSize = 64.0f;
@@ -13,9 +18,10 @@ public:
 	MapLoader();
 	~MapLoader();
 
-	void load(const std::string& path);
+	void loadMap(const std::string& path, TileType tileType = TileType::EMPTY);
 
-	TileType getTile(int col, int row) const;
+	Tile     getTile(int col, int row) const;
+	TileType getTileType(int col, int row) const;
 	bool     isWallAt(float x, float y) const;
 	bool     isTriggerAt(float x, float y) const;
 	int      getWidth() const {
@@ -35,7 +41,7 @@ public:
 	}
 
 private:
-	std::vector<std::vector<TileType>> tiles_;
+	std::vector<std::vector<Tile>> tiles_;
 	int                                width_          = 0;
 	int                                height_         = 0;
 	int                                playerSpawnCol_ = 0;

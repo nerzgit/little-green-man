@@ -3,13 +3,15 @@
 
 #include "../enemy/Enemy.hpp"
 #include "../physics/CollisionResolver.hpp"
+#include "TilesetLoader.hpp"
 #include "wall/GrayBlock.hpp"
 #include <glm/glm.hpp>
 #include <memory>
 #include <string>
 #include <vector>
 
-class MapLoader;
+#include "MapLoader.hpp"
+
 class Renderer;
 class Player;
 class Texture;
@@ -39,16 +41,18 @@ public:
 	}
 
 protected:
-	void setBackground(const std::string& path);
-	void loadMap(const std::string& path);
+	void loadMap(const std::string& csvPath,
+	             TileType           defaultType = TileType::WALL);
+	void loadTileset(const std::string& tilesetPath);
 
 	GrayBlock                                       wallBlock_;
 	std::unique_ptr<Texture>                        background_;
+	std::unique_ptr<TilesetLoader>                  tileset_;
 	std::vector<std::unique_ptr<Enemy>>             enemies_;
 	std::vector<std::unique_ptr<CollisionResolver>> enemyResolvers_;
 
 private:
-	std::unique_ptr<MapLoader> mapLoader_;
+	std::vector<std::unique_ptr<MapLoader>> mapLoaders_;
 };
 
 #endif // MAP_HPP

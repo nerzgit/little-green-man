@@ -21,6 +21,9 @@ public:
 	void clear();
 	void drawSprite(const Texture& texture, const glm::vec2& position,
 	                float width, float height);
+	void drawTile(const Texture& texture, const glm::vec2& position,
+	              float width, float height,
+	              glm::vec2 uvMin, glm::vec2 uvMax);
 	void drawRect(const glm::vec2& position, float width, float height,
 	              const glm::vec3& color);
 	void setCamera(const glm::vec2& cameraPos);
