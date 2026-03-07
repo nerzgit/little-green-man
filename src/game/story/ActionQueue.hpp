@@ -1,7 +1,7 @@
 #ifndef ACTION_QUEUE_HPP
 #define ACTION_QUEUE_HPP
 
-#include "Action.hpp"
+#include "action/Action.hpp"
 #include <deque>
 #include <memory>
 #include <vector>

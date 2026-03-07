@@ -1,8 +1,8 @@
 #ifndef STORY_EVENT_HPP
 #define STORY_EVENT_HPP
 
-#include "Action.hpp"
-#include "Trigger.hpp"
+#include "action/Action.hpp"
+#include "trigger/Trigger.hpp"
 #include <functional>
 #include <memory>
 #include <string>

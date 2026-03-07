@@ -1,9 +1,7 @@
-#include "Action.hpp"
+#include "DialogueAction.hpp"
 
-#include "../../engine/ui/DialogueBox.hpp"
-#include "StoryContext.hpp"
-
-// --- DialogueAction ---
+#include "../../../engine/ui/DialogueBox.hpp"
+#include "../StoryContext.hpp"
 
 void DialogueAction::start(StoryContext& ctx) {
 	pageIndex_ = 0;
@@ -25,11 +23,4 @@ void DialogueAction::update(float, StoryContext& ctx) {
 			finished_ = true;
 		}
 	}
-}
-
-// --- SetFlagAction ---
-
-void SetFlagAction::start(StoryContext& ctx) {
-	ctx.flags.insert(flag_);
-	done_ = true;
 }

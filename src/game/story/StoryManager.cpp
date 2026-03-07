@@ -1,7 +1,7 @@
 #include "StoryManager.hpp"
 
-#include "Action.hpp"
-#include "Trigger.hpp"
+#include "trigger/Triggers.hpp"
+#include "action/Actions.hpp"
 
 #include <fstream>
 #include <nlohmann/json.hpp>
@@ -17,8 +17,8 @@ std::unique_ptr<Trigger> parseTrigger(const json& j) {
 
 	if (type == "zone") {
 		return std::make_unique<ZoneTrigger>(
-		    j.at("x").get<float>(), j.at("y").get<float>(),
-		    j.at("w").get<float>(), j.at("h").get<float>());
+		  j.at("x").get<float>(), j.at("y").get<float>(),
+		  j.at("w").get<float>(), j.at("h").get<float>());
 	}
 	if (type == "map_load") {
 		return std::make_unique<MapLoadTrigger>();
@@ -62,18 +62,20 @@ void StoryManager::load(const std::string& jsonPath) {
 	events_.clear();
 	actionQueue_.clear();
 
-	if (jsonPath.empty()) return;
+	if (jsonPath.empty())
+		return;
 
 	std::ifstream f(jsonPath);
-	if (!f.is_open()) return; // ストーリーなしのマップは正常
+	if (!f.is_open())
+		return; // ストーリーなしのマップは正常
 
 	const json root = json::parse(f);
 
 	for (const auto& ev : root.at("events")) {
 		StoryEvent e;
-		e.id             = ev.at("id").get<std::string>();
-		e.once           = ev.value("once", true);
-		e.trigger        = parseTrigger(ev.at("trigger"));
+		e.id              = ev.at("id").get<std::string>();
+		e.once            = ev.value("once", true);
+		e.trigger         = parseTrigger(ev.at("trigger"));
 		e.actionFactories = parseActionFactories(ev.at("actions"));
 		events_.push_back(std::move(e));
 	}
@@ -94,10 +96,13 @@ void StoryManager::update(float dt, StoryContext& ctx) {
 	}
 
 	for (auto& ev : events_) {
-		if (ev.once && ev.fired) continue;
-		if (!ev.trigger->check(ctx)) continue;
+		if (ev.once && ev.fired)
+			continue;
+		if (!ev.trigger->check(ctx))
+			continue;
 
-		if (ev.once) ev.fired = true;
+		if (ev.once)
+			ev.fired = true;
 
 		// ファクトリからフレッシュなアクションを生成してキューに積む
 		std::vector<std::unique_ptr<Action>> actions;

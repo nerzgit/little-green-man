@@ -10,7 +10,9 @@ public:
 
 	MapEvent             update(float deltaTime, Player& player) override;
 	std::unique_ptr<Map> createNextMap() override;
-	std::string          getStoryPath() const override { return "assets/story/map1_1.json"; }
+	std::string          getStoryPath() const override {
+        return "assets/maps/map1_1_story.json";
+	}
 };
 
 #endif // MAP1_1_HPP
