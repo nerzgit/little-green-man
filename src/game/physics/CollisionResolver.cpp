@@ -1,13 +1,13 @@
 #include "CollisionResolver.hpp"
 
+#include "../../engine/core/Entity.hpp"
 #include "../map/Map.hpp"
 #include "../map/MapLoader.hpp"
-#include "../player/Player.hpp"
 #include <algorithm>
 
-CollisionResolver::CollisionResolver(Player& player, Map& map, float stageWidth,
+CollisionResolver::CollisionResolver(Entity& entity, Map& map, float stageWidth,
                                      float stageHeight)
-    : player_(player)
+    : entity_(entity)
     , map_(map)
     , stageWidth_(stageWidth)
     , stageHeight_(stageHeight) {
@@ -15,8 +15,8 @@ CollisionResolver::CollisionResolver(Player& player, Map& map, float stageWidth,
 
 void CollisionResolver::resolve() {
 	const float ts  = MapLoader::kTileSize;
-	const float r   = player_.size;
-	glm::vec2&  pos = player_.position;
+	const float r   = entity_.size;
+	glm::vec2&  pos = entity_.position;
 
 	// X軸：左端・右端が壁に入ったら押し戻す
 	if (map_.isWallAt(pos.x - r, pos.y)) {

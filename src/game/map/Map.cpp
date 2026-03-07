@@ -12,20 +12,26 @@ Map::~Map() = default;
 void Map::start() {
 	// 敵の初期化
 	enemies_.clear();
+	enemyResolvers_.clear();
 
 	// マップローダーから敵のスポーン位置を取得して Enemy を生成
-	const float ts = MapLoader::kTileSize;
+	const float ts          = MapLoader::kTileSize;
+	const float stageWidth  = getPixelWidth();
+	const float stageHeight = getPixelHeight();
 	for (const auto& [col, row] : mapLoader_->getEnemySpawns()) {
 		enemies_.emplace_back(std::make_unique<Enemy>(
 		  glm::vec2(col * ts + ts / 2.0f, row * ts + ts / 2.0f), 150.0f));
+		enemyResolvers_.emplace_back(std::make_unique<CollisionResolver>(
+		  *enemies_.back(), *this, stageWidth, stageHeight));
 	}
 }
 
 MapEvent Map::update(float deltaTime, Player& player) {
 	// 敵の更新とプレイヤーとの当たり判定
-	for (auto& enemy : enemies_) {
-		enemy->update(deltaTime);
-		if (player.intersects(*enemy)) {
+	for (size_t i = 0; i < enemies_.size(); ++i) {
+		enemies_[i]->update(deltaTime);
+		enemyResolvers_[i]->resolve();
+		if (player.intersects(*enemies_[i])) {
 			return MapEvent::PlayerDead;
 		}
 	}

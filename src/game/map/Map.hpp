@@ -2,6 +2,7 @@
 #define MAP_HPP
 
 #include "../enemy/Enemy.hpp"
+#include "../physics/CollisionResolver.hpp"
 #include "wall/GrayBlock.hpp"
 #include <glm/glm.hpp>
 #include <memory>
@@ -38,7 +39,8 @@ public:
 protected:
 	std::unique_ptr<MapLoader>          mapLoader_;
 	GrayBlock                           wallBlock_;
-	std::vector<std::unique_ptr<Enemy>> enemies_;
+	std::vector<std::unique_ptr<Enemy>>             enemies_;
+	std::vector<std::unique_ptr<CollisionResolver>> enemyResolvers_;
 };
 
 #endif // MAP_HPP

@@ -1,18 +1,18 @@
 #ifndef COLLISION_RESOLVER_HPP
 #define COLLISION_RESOLVER_HPP
 
-class Player;
+class Entity;
 class Map;
 
 class CollisionResolver {
 public:
-	CollisionResolver(Player& player, Map& map, float stageWidth,
+	CollisionResolver(Entity& entity, Map& map, float stageWidth,
 	                  float stageHeight);
 
 	void resolve();
 
 private:
-	Player& player_;
+	Entity& entity_;
 	Map&    map_;
 	float   stageWidth_;
 	float   stageHeight_;
