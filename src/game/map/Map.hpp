@@ -43,6 +43,9 @@ public:
 		return nullptr;
 	}
 
+	// このマップに紐づくストーリー JSON のパスを返す。なければ空文字。
+	virtual std::string getStoryPath() const { return ""; }
+
 protected:
 	void loadMap(const std::string& csvPath,
 	             TileType           defaultType = TileType::WALL,

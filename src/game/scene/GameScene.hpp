@@ -2,7 +2,11 @@
 #define GAME_SCENE_HPP
 
 #include "Scene.hpp"
+#include "../story/StoryContext.hpp"
+#include "../story/StoryManager.hpp"
 #include <memory>
+#include <string>
+#include <unordered_set>
 
 class Camera;
 class CollisionResolver;
@@ -32,7 +36,9 @@ private:
 	std::unique_ptr<Camera>            camera_;
 	std::unique_ptr<FontAtlas>         font_;
 	std::unique_ptr<DialogueBox>       dialogueBox_;
-	bool                               prevDialogueKey_ = false;
+
+	StoryManager                       storyManager_;
+	std::unordered_set<std::string>    storyFlags_;
 };
 
 #endif // GAME_SCENE_HPP

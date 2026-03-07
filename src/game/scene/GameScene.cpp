@@ -41,6 +41,8 @@ void GameScene::loadMap(std::unique_ptr<Map> newMap) {
 	                                                 stageWidth, stageHeight);
 	camera_    = std::make_unique<Camera>(*player_, windowWidth_, windowHeight_,
 	                                      stageWidth, stageHeight);
+
+	storyManager_.load(currentMap_->getStoryPath());
 }
 
 void GameScene::update(float deltaTime, SceneManager& sm) {
@@ -53,16 +55,11 @@ void GameScene::update(float deltaTime, SceneManager& sm) {
 
 	dialogueBox_->update(deltaTime);
 
-	// デモ用: T キーで会話を開く
-	const bool tKeyNow = InputManager::isKeyPressed(GLFW_KEY_T);
-	if (tKeyNow && !prevDialogueKey_ && !dialogueBox_->isVisible()) {
-		dialogueBox_->open(
-		    "ここは世界の果て。\n冒険者よ、先を急ぐな。\nZ / Space / Enter で次へ進む。");
-	}
-	prevDialogueKey_ = tKeyNow;
+	StoryContext ctx{*player_, *dialogueBox_, storyFlags_};
+	storyManager_.update(deltaTime, ctx);
 
-	// 会話中はプレイヤー操作をブロック
-	if (dialogueBox_->isVisible()) return;
+	// ストーリー実行中（会話・演出）はプレイヤー操作をブロック
+	if (storyManager_.isBlocking()) return;
 
 	player_->update(deltaTime);
 	collision_->resolve();

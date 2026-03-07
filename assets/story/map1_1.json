@@ -1,0 +1,33 @@
+{
+  "events": [
+    {
+      "id": "map1_1_intro",
+      "once": true,
+      "trigger": { "type": "map_load" },
+      "actions": [
+        {
+          "type": "dialogue",
+          "lines": [
+            "ここは世界の果て。",
+            "先に何があるのかは、誰も知らない。"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "map1_1_zone_a",
+      "once": true,
+      "trigger": { "type": "zone", "x": 800, "y": 0, "w": 128, "h": 1024 },
+      "actions": [
+        { "type": "wait", "seconds": 0.3 },
+        {
+          "type": "dialogue",
+          "lines": [
+            "この先に何かある気がする…"
+          ]
+        },
+        { "type": "set_flag", "flag": "zone_a_visited" }
+      ]
+    }
+  ]
+}
