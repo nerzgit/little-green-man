@@ -6,6 +6,7 @@
 
 class Camera;
 class CollisionResolver;
+class DialogueBox;
 class FontAtlas;
 class Map;
 class Player;
@@ -30,6 +31,8 @@ private:
 	std::unique_ptr<CollisionResolver> collision_;
 	std::unique_ptr<Camera>            camera_;
 	std::unique_ptr<FontAtlas>         font_;
+	std::unique_ptr<DialogueBox>       dialogueBox_;
+	bool                               prevDialogueKey_ = false;
 };
 
 #endif // GAME_SCENE_HPP

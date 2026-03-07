@@ -26,6 +26,10 @@ public:
 	              glm::vec2 uvMin, glm::vec2 uvMax);
 	void drawRect(const glm::vec2& position, float width, float height,
 	              const glm::vec3& color);
+	// スクリーン座標で矩形を描画（カメラに追従しない HUD 用）
+	// position: 矩形の中心（ウィンドウ左上を (0,0) としたピクセル座標）
+	void drawRectHUD(const glm::vec2& position, float width, float height,
+	                 const glm::vec3& color);
 	void setCamera(const glm::vec2& cameraPos);
 
 	// ワールド座標でテキストを描画（カメラに追従）

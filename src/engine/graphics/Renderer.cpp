@@ -227,6 +227,20 @@ static uint32_t nextCodepoint(const char*& p) {
 	return cp;
 }
 
+void Renderer::drawRectHUD(const glm::vec2& position, float width, float height,
+                           const glm::vec3& color) {
+	glm::mat4 hudProjection =
+	  glm::ortho(0.0f, static_cast<float>(windowWidth_),
+	             static_cast<float>(windowHeight_), 0.0f);
+
+	textureShader_->use();
+	textureShader_->setMat4("projection", hudProjection);
+
+	drawRect(position, width, height, color);
+
+	textureShader_->setMat4("projection", worldProjection_);
+}
+
 void Renderer::drawTextImpl(const FontAtlas& font, const std::string& utf8Text,
                             const glm::vec2& position, float scale,
                             const glm::vec3& color) {

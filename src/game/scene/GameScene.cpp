@@ -3,6 +3,7 @@
 #include "../../engine/graphics/FontAtlas.hpp"
 #include "../../engine/graphics/Renderer.hpp"  // glad を GLFW より先に
 #include "../../engine/input/InputManager.hpp" // GLFW/glfw3.h
+#include "../../engine/ui/DialogueBox.hpp"
 #include "../camera/Camera.hpp"
 #include "../map/world1/Map1_1.hpp"
 #include "../physics/CollisionResolver.hpp"
@@ -15,6 +16,7 @@ GameScene::GameScene(int windowWidth, int windowHeight)
     : windowWidth_(windowWidth), windowHeight_(windowHeight) {
 	font_ = std::make_unique<FontAtlas>("assets/fonts/PixelMplus12-Regular.ttf",
 	                                    24.0f, 2048);
+	dialogueBox_ = std::make_unique<DialogueBox>(windowWidth, windowHeight);
 
 	// Player は仮位置で生成し、loadMap 内で正しい位置に移動する
 	player_ = std::make_unique<Player>(glm::vec2(0, 0));
@@ -49,6 +51,19 @@ void GameScene::update(float deltaTime, SceneManager& sm) {
 		return;
 	}
 
+	dialogueBox_->update(deltaTime);
+
+	// デモ用: T キーで会話を開く
+	const bool tKeyNow = InputManager::isKeyPressed(GLFW_KEY_T);
+	if (tKeyNow && !prevDialogueKey_ && !dialogueBox_->isVisible()) {
+		dialogueBox_->open(
+		    "ここは世界の果て。\n冒険者よ、先を急ぐな。\nZ / Space / Enter で次へ進む。");
+	}
+	prevDialogueKey_ = tKeyNow;
+
+	// 会話中はプレイヤー操作をブロック
+	if (dialogueBox_->isVisible()) return;
+
 	player_->update(deltaTime);
 	collision_->resolve();
 
@@ -82,4 +97,7 @@ void GameScene::render(Renderer& renderer) {
 	if (currentMap_) {
 		currentMap_->drawForeground(renderer);
 	}
+
+	// HUD層: 会話ボックスはワールド描画の後に重ねる
+	dialogueBox_->draw(renderer, *font_);
 }
