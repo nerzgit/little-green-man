@@ -71,10 +71,15 @@ void GameScene::render(Renderer& renderer) {
 	renderer.clear();
 
 	if (currentMap_) {
-		currentMap_->draw(renderer);
+		currentMap_->drawBackground(renderer);
+		currentMap_->drawEnemy(renderer);
 	}
 
 	if (player_->active) {
 		player_->draw(renderer);
+	}
+
+	if (currentMap_) {
+		currentMap_->drawForeground(renderer);
 	}
 }

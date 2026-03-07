@@ -4,7 +4,6 @@
 #include "../enemy/Enemy.hpp"
 #include "../physics/CollisionResolver.hpp"
 #include "TilesetLoader.hpp"
-#include "wall/GrayBlock.hpp"
 #include <glm/glm.hpp>
 #include <memory>
 #include <string>
@@ -18,6 +17,8 @@ class Texture;
 
 enum class MapEvent { None, NextMap, PlayerDead };
 
+enum class DrawLayer { Background, Foreground };
+
 class Map {
 public:
 	Map();
@@ -25,7 +26,9 @@ public:
 
 	virtual void     start();
 	virtual MapEvent update(float deltaTime, Player& player);
-	virtual void     draw(Renderer& renderer);
+	void             drawBackground(Renderer& renderer);
+	void             drawForeground(Renderer& renderer);
+	void             drawEnemy(Renderer& renderer);
 	virtual void     end() {
 	}
 
@@ -42,17 +45,21 @@ public:
 
 protected:
 	void loadMap(const std::string& csvPath,
-	             TileType           defaultType = TileType::WALL);
+	             TileType           defaultType = TileType::WALL,
+	             DrawLayer          drawLayer   = DrawLayer::Background);
 	void loadTileset(const std::string& tilesetPath);
 
-	GrayBlock                                       wallBlock_;
-	std::unique_ptr<Texture>                        background_;
 	std::unique_ptr<TilesetLoader>                  tileset_;
 	std::vector<std::unique_ptr<Enemy>>             enemies_;
 	std::vector<std::unique_ptr<CollisionResolver>> enemyResolvers_;
 
 private:
-	std::vector<std::unique_ptr<MapLoader>> mapLoaders_;
+	struct MapLayer {
+		std::unique_ptr<MapLoader> loader;
+		DrawLayer                  drawLayer;
+	};
+
+	std::vector<MapLayer> mapLayers_;
 };
 
 #endif // MAP_HPP

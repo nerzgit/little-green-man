@@ -4,8 +4,12 @@
 #include "Map1_2.hpp"
 
 Map1_1::Map1_1() {
-	loadMap("assets/maps/1-1_地面.csv", TileType::EMPTY);
-	loadMap("assets/maps/1-1_障害物.csv", TileType::WALL);
+	loadMap("assets/maps/1-1_地面.csv", TileType::EMPTY, DrawLayer::Background);
+	loadMap("assets/maps/1-1_オブジェクト後面.csv", TileType::EMPTY,
+	        DrawLayer::Background);
+	loadMap("assets/maps/1-1_オブジェクト前面.csv", TileType::EMPTY,
+	        DrawLayer::Foreground);
+	loadMap("assets/maps/1-1_壁.csv", TileType::WALL, DrawLayer::Foreground);
 	loadTileset("assets/maps/[Base]BaseChip_pipo.png");
 }
 

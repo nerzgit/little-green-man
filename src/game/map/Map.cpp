@@ -12,19 +12,16 @@ void Map::start() {
 	enemies_.clear();
 	enemyResolvers_.clear();
 
-	if (mapLoaders_.empty())
+	if (mapLayers_.empty())
 		return;
 
-	// 全レイヤーから敵スポーン位置を収集して Enemy を生成
 	const float ts          = MapLoader::kTileSize;
 	const float stageWidth  = getPixelWidth();
 	const float stageHeight = getPixelHeight();
-	for (const auto& ml : mapLoaders_) {
-		for (const auto& [col, row] : ml->getEnemySpawns()) {
-			// 敵の中心座標を計算して Enemy を生成
+	for (const auto& layer : mapLayers_) {
+		for (const auto& [col, row] : layer.loader->getEnemySpawns()) {
 			enemies_.emplace_back(std::make_unique<Enemy>(
 			  glm::vec2(col * ts + ts / 2.0f, row * ts + ts / 2.0f), 150.0f));
-			// 敵とマップの衝突解決クラスも生成して保持
 			enemyResolvers_.emplace_back(std::make_unique<CollisionResolver>(
 			  *enemies_.back(), *this, stageWidth, stageHeight));
 		}
@@ -42,66 +39,83 @@ MapEvent Map::update(float deltaTime, Player& player) {
 	return MapEvent::None;
 }
 
-void Map::loadMap(const std::string& csvPath, TileType tileType) {
+void Map::loadMap(const std::string& csvPath,
+                  TileType           defaultType,
+                  DrawLayer          drawLayer) {
 	auto ml = std::make_unique<MapLoader>();
-	ml->loadMap(csvPath, tileType);
-	mapLoaders_.push_back(std::move(ml));
+	ml->loadMap(csvPath, defaultType);
+	mapLayers_.push_back({std::move(ml), drawLayer});
 }
 
 void Map::loadTileset(const std::string& tilesetPath) {
 	tileset_ = std::make_unique<TilesetLoader>(tilesetPath);
 }
 
-void Map::draw(Renderer& renderer) {
-	// 全レイヤーをタイルセットで描画
-	if (!tileset_) {
-		throw std::runtime_error("Failed to draw map: Tileset not loaded");
-	}
-
-	// タイルセットでマップを描画
-	for (const auto& ml : mapLoaders_) {
-		tileset_->draw(renderer, *ml, MapLoader::kTileSize);
-	}
-
-	// 敵の描画
+void Map::drawEnemy(Renderer& renderer) {
 	for (auto& enemy : enemies_) {
 		enemy->draw(renderer);
 	}
 }
 
+void Map::drawBackground(Renderer& renderer) {
+	if (!tileset_) {
+		throw std::runtime_error(
+		  "Failed to draw background map: Tileset not loaded");
+	}
+	for (const auto& layer : mapLayers_) {
+		if (layer.drawLayer != DrawLayer::Background)
+			continue;
+		tileset_->draw(renderer, *layer.loader, MapLoader::kTileSize);
+	}
+}
+
+void Map::drawForeground(Renderer& renderer) {
+	if (!tileset_) {
+		throw std::runtime_error(
+		  "Failed to draw foreground map: Tileset not loaded");
+	}
+	for (const auto& layer : mapLayers_) {
+		if (layer.drawLayer != DrawLayer::Foreground)
+			continue;
+		tileset_->draw(renderer, *layer.loader, MapLoader::kTileSize);
+	}
+}
+
 bool Map::isWallAt(float x, float y) const {
-	for (const auto& ml : mapLoaders_) {
-		if (ml->isWallAt(x, y))
+	for (const auto& layer : mapLayers_) {
+		if (layer.loader->isWallAt(x, y))
 			return true;
 	}
 	return false;
 }
 
 bool Map::isTriggerAt(float x, float y) const {
-	for (const auto& ml : mapLoaders_) {
-		if (ml->isTriggerAt(x, y))
+	for (const auto& layer : mapLayers_) {
+		if (layer.loader->isTriggerAt(x, y))
 			return true;
 	}
 	return false;
 }
 
 glm::vec2 Map::getPlayerSpawnPosition() const {
-	if (mapLoaders_.empty())
+	if (mapLayers_.empty())
 		return {};
-	const float ts  = MapLoader::kTileSize;
-	const float col = static_cast<float>(mapLoaders_[0]->getPlayerSpawnCol());
-	const float row = static_cast<float>(mapLoaders_[0]->getPlayerSpawnRow());
+	const float ts = MapLoader::kTileSize;
+	const float col =
+	  static_cast<float>(mapLayers_[0].loader->getPlayerSpawnCol());
+	const float row =
+	  static_cast<float>(mapLayers_[0].loader->getPlayerSpawnRow());
 	return {col * ts + ts / 2.0f, row * ts + ts / 2.0f};
 }
 
 float Map::getPixelWidth() const {
-	return mapLoaders_.empty() ?
+	return mapLayers_.empty() ?
 	         0.0f :
-	         mapLoaders_[0]->getWidth() * MapLoader::kTileSize;
+	         mapLayers_[0].loader->getWidth() * MapLoader::kTileSize;
 }
 
 float Map::getPixelHeight() const {
-	return mapLoaders_.empty() ?
+	return mapLayers_.empty() ?
 	         0.0f :
-	         mapLoaders_[0]->getHeight() * MapLoader::kTileSize;
+	         mapLayers_[0].loader->getHeight() * MapLoader::kTileSize;
 }
