@@ -3,6 +3,7 @@
 #include "../../engine/graphics/Renderer.hpp"
 #include "../player/Player.hpp"
 #include <algorithm>
+#include <cstdio>
 
 Camera::Camera(const Player& player, int windowWidth, int windowHeight,
                float stageWidth, float stageHeight)
@@ -20,8 +21,8 @@ void Camera::apply(Renderer& renderer) {
 
 	position_.x = player_.position.x - viewW / 2.0f;
 	position_.y = player_.position.y - viewH / 2.0f;
-	position_.x = std::clamp(position_.x, 0.0f, stageWidth_ - viewW);
-	position_.y = std::clamp(position_.y, 0.0f, stageHeight_ - viewH);
+	position_.x = std::clamp(position_.x, 0.0f, std::abs(stageWidth_ - viewW));
+	position_.y = std::clamp(position_.y, 0.0f, std::abs(stageHeight_ - viewH));
 
 	renderer.setCamera(position_);
 }
