@@ -1,72 +1,13 @@
 #include "StoryManager.hpp"
 
-#include "trigger/Triggers.hpp"
-#include "action/Actions.hpp"
+#include "action/ActionParser.hpp"
+#include "trigger/TriggerParser.hpp"
+#include "trigger/MapLoadTrigger.hpp"
 
 #include <fstream>
 #include <nlohmann/json.hpp>
-#include <stdexcept>
 
 using json = nlohmann::json;
-
-// JSON解析ロジックをここに閉じ込める。ヘッダへの漏れなし。
-namespace {
-
-std::unique_ptr<Trigger> parseTrigger(const json& j) {
-	const std::string type = j.at("type").get<std::string>();
-
-	if (type == "zone") {
-		return std::make_unique<ZoneTrigger>(
-		  j.at("x").get<float>(), j.at("y").get<float>(),
-		  j.at("w").get<float>(), j.at("h").get<float>());
-	}
-	if (type == "map_load") {
-		return std::make_unique<MapLoadTrigger>();
-	}
-	if (type == "flag") {
-		return std::make_unique<FlagTrigger>(j.at("flag").get<std::string>());
-	}
-	if (type == "and") {
-		std::vector<std::unique_ptr<Trigger>> conditions;
-		for (const auto& c : j.at("conditions")) {
-			conditions.push_back(parseTrigger(c));
-		}
-		return std::make_unique<AndTrigger>(std::move(conditions));
-	}
-	throw std::runtime_error("Unknown trigger type: " + type);
-}
-
-// Action をその場で生成するのではなく「生成方法」をラムダで返す。
-// これにより once=false のイベントでも毎回フレッシュなインスタンスを使える。
-std::vector<ActionFactory> parseActionFactories(const json& arr) {
-	std::vector<ActionFactory> factories;
-
-	for (const auto& j : arr) {
-		const std::string type = j.at("type").get<std::string>();
-
-		if (type == "dialogue") {
-			auto lines = j.at("lines").get<std::vector<std::string>>();
-			factories.push_back([lines]() -> std::unique_ptr<Action> {
-				return std::make_unique<DialogueAction>(lines);
-			});
-		} else if (type == "set_flag") {
-			auto flag = j.at("flag").get<std::string>();
-			factories.push_back([flag]() -> std::unique_ptr<Action> {
-				return std::make_unique<SetFlagAction>(flag);
-			});
-		} else if (type == "wait") {
-			float seconds = j.at("seconds").get<float>();
-			factories.push_back([seconds]() -> std::unique_ptr<Action> {
-				return std::make_unique<WaitAction>(seconds);
-			});
-		} else {
-			throw std::runtime_error("Unknown action type: " + type);
-		}
-	}
-	return factories;
-}
-
-} // namespace
 
 void StoryManager::load(const std::string& jsonPath) {
 	events_.clear();
