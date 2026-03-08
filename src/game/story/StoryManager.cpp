@@ -23,6 +23,16 @@ std::unique_ptr<Trigger> parseTrigger(const json& j) {
 	if (type == "map_load") {
 		return std::make_unique<MapLoadTrigger>();
 	}
+	if (type == "flag") {
+		return std::make_unique<FlagTrigger>(j.at("flag").get<std::string>());
+	}
+	if (type == "and") {
+		std::vector<std::unique_ptr<Trigger>> conditions;
+		for (const auto& c : j.at("conditions")) {
+			conditions.push_back(parseTrigger(c));
+		}
+		return std::make_unique<AndTrigger>(std::move(conditions));
+	}
 	throw std::runtime_error("Unknown trigger type: " + type);
 }
 
