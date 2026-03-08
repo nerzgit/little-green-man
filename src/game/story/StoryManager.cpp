@@ -1,8 +1,19 @@
+/**
+ * @file StoryManager.cpp
+ * @brief ストーリーイベントの管理
+ *
+ * マップに紐づくストーリーイベントを読み込み、トリガー条件を満たしたらアクションを実行する。
+ *   Trigger: プレイヤーの位置やアイテム所持など様々な条件を表現できる。
+ *   Action:
+ * 会話表示やフラグ操作など、ゲーム内で起こる様々な出来事を表現できる。
+ *
+ */
+
 #include "StoryManager.hpp"
 
 #include "action/ActionParser.hpp"
-#include "trigger/TriggerParser.hpp"
 #include "trigger/MapLoadTrigger.hpp"
+#include "trigger/TriggerParser.hpp"
 
 #include <fstream>
 #include <nlohmann/json.hpp>
@@ -31,7 +42,8 @@ void StoryManager::load(const std::string& jsonPath) {
 		events_.push_back(std::move(e));
 	}
 
-	// MapLoadTrigger を arm しておく（load 直後の update で発火させるため）
+	// マップロード直後のイベント（MapLoadTrigger）を発火させるため、全ての
+	// MapLoadTrigger を arm する
 	for (auto& ev : events_) {
 		if (auto* t = dynamic_cast<MapLoadTrigger*>(ev.trigger.get())) {
 			t->arm();

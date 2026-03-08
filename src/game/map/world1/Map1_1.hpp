@@ -8,10 +8,9 @@ public:
 	Map1_1();
 	~Map1_1();
 
-	MapEvent             update(float deltaTime, Player& player) override;
 	std::unique_ptr<Map> createNextMap() override;
 	std::string          getStoryPath() const override {
-        return "assets/maps/map1_1_story.json";
+        return "assets/maps/1_1_story.json";
 	}
 };
 

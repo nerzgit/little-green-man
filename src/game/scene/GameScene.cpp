@@ -53,23 +53,31 @@ void GameScene::update(float deltaTime, SceneManager& sm) {
 		return;
 	}
 
+	// 会話ボックスの更新（文字送りや閉じる操作の受付）
 	dialogueBox_->update(deltaTime);
 
+	// ストーリーイベントの更新（トリガーチェックとアクション実行）
 	StoryContext ctx{*player_, *dialogueBox_, storyFlags_};
 	storyManager_.update(deltaTime, ctx);
 
-	// ストーリー実行中（会話・演出）はプレイヤー操作をブロック
-	if (storyManager_.isBlocking()) return;
-
-	player_->update(deltaTime);
-	collision_->resolve();
-
-	switch (currentMap_->update(deltaTime, *player_)) {
-	case MapEvent::NextMap:
+	// マップ遷移リクエストがあれば次のマップへ
+	if (ctx.mapTransitionRequested) {
 		if (auto next = currentMap_->createNextMap()) {
 			loadMap(std::move(next));
 		}
 		return;
+	}
+
+	// ストーリー実行中（会話・演出）はプレイヤー操作をブロック
+	if (storyManager_.isBlocking())
+		return;
+
+	// プレイヤーの更新とマップの衝突判定
+	player_->update(deltaTime);
+	collision_->resolve();
+
+	// マップの更新（敵の移動やマップイベントの発火）
+	switch (currentMap_->update(deltaTime, *player_)) {
 	case MapEvent::PlayerDead:
 		sm.switchTo(std::make_unique<GameOverScene>(sm.getWindowWidth(),
 		                                            sm.getWindowHeight()));

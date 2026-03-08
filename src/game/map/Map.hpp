@@ -15,7 +15,7 @@ class Renderer;
 class Player;
 class Texture;
 
-enum class MapEvent { None, NextMap, PlayerDead };
+enum class MapEvent { None, PlayerDead };
 
 enum class DrawLayer { Background, Foreground };
 

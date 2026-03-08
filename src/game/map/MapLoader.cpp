@@ -28,12 +28,21 @@ void MapLoader::loadMap(const std::string& path, TileType tileType) {
 		int               col = 0;
 		while (std::getline(ss, cell, ',')) {
 			int tyleId = std::stoi(cell);
-			// タイルIDが -1 の場合は空タイルとみなす
-			if (tyleId == -1) {
-				rowTiles.push_back({tyleId, TileType::EMPTY});
+
+			if (tyleId > -1 && tileType == TileType::PLAYER_SPAWN) {
+				playerSpawnCol_ = col;
+				playerSpawnRow_ = row;
+			} else if (tyleId > -1 && tileType == TileType::ENEMY_SPAWN) {
+				enemySpawns_.emplace_back(col, row);
 			} else {
-				rowTiles.push_back({tyleId, tileType});
+				// タイルIDが -1 の場合は空タイルとみなす
+				if (tyleId == -1) {
+					rowTiles.push_back({tyleId, TileType::EMPTY});
+				} else {
+					rowTiles.push_back({tyleId, tileType});
+				}
 			}
+
 			++col;
 		}
 		tiles_.push_back(std::move(rowTiles));

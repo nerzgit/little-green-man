@@ -24,6 +24,10 @@ std::vector<ActionFactory> parseActionFactories(const nlohmann::json& j) {
 			factories.push_back([seconds]() -> std::unique_ptr<Action> {
 				return std::make_unique<WaitAction>(seconds);
 			});
+		} else if (type == "next_map") {
+			factories.push_back([]() -> std::unique_ptr<Action> {
+				return std::make_unique<NextMapAction>();
+			});
 		} else {
 			throw std::runtime_error("Unknown action type: " + type);
 		}

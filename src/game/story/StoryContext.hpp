@@ -13,6 +13,7 @@ struct StoryContext {
 	Player&                          player;
 	DialogueBox&                     dialogueBox;
 	std::unordered_set<std::string>& flags; // ストーリーフラグ（set_flag で立てる）
+	bool mapTransitionRequested = false;    // next_map アクションが立てる
 };
 
 #endif // STORY_CONTEXT_HPP
