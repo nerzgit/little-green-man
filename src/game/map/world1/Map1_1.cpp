@@ -17,7 +17,7 @@ Map1_1::Map1_1() {
 	setLightOverlayColor(0, {0.0f, 0.0f, 0.0f, 0.5f});
 	setLightOverlayColor(1, {0.0f, 0.0f, 0.0f, 0.1f});
 	colorOverlay_.color = {158 / 255.0f, 139 / 255.0f, 81 / 255.0f, 0.1f};
-	loadParallaxOverlay("assets/maps/pixelparallax.png", 0.7f);
+	loadParallaxOverlay("assets/maps/pixelparallax.png", 1.4f);
 }
 
 Map1_1::~Map1_1() = default;

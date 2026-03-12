@@ -113,9 +113,6 @@ void GameScene::render(Renderer& renderer) {
 	if (currentMap_)
 		currentMap_->drawLightOverlay(renderer, windowWidth_, windowHeight_);
 
-	// HUD層: 会話ボックスはワールド描画の後に重ねる
-	dialogueBox_->draw(renderer, *font_);
-
 	// パララックスオーバーレイ
 	if (currentMap_)
 		currentMap_->drawParallaxOverlay(renderer, windowWidth_, windowHeight_,
@@ -124,4 +121,7 @@ void GameScene::render(Renderer& renderer) {
 	// 最前面: ゲーム全体の色味オーバーレイ
 	if (currentMap_)
 		currentMap_->drawColorOverlay(renderer, windowWidth_, windowHeight_);
+
+	// HUD層: 会話ボックスはワールド描画の後に重ねる
+	dialogueBox_->draw(renderer, *font_);
 }
