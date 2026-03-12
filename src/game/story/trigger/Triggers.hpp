@@ -7,6 +7,7 @@
 #include "AndTrigger.hpp"
 #include "FlagTrigger.hpp"
 #include "MapLoadTrigger.hpp"
+#include "ReceiverCountTrigger.hpp"
 #include "ZoneTrigger.hpp"
 
 #endif // TRIGGERS_HPP

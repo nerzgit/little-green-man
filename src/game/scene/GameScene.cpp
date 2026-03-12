@@ -48,8 +48,10 @@ void GameScene::loadMap(std::unique_ptr<Map> newMap) {
 void GameScene::update(float deltaTime, SceneManager& sm) {
 	// ESC でタイトルへ戻る
 	if (InputManager::isKeyPressed(GLFW_KEY_ESCAPE)) {
-		sm.switchTo(std::make_unique<TitleScreen>(sm.getWindowWidth(),
-		                                          sm.getWindowHeight()));
+		// 一旦強制終了
+		std::exit(0);
+		// sm.switchTo(std::make_unique<TitleScreen>(sm.getWindowWidth(),
+		//                                           sm.getWindowHeight()));
 		return;
 	}
 
@@ -57,7 +59,8 @@ void GameScene::update(float deltaTime, SceneManager& sm) {
 	dialogueBox_->update(deltaTime);
 
 	// ストーリーイベントの更新（トリガーチェックとアクション実行）
-	StoryContext ctx{*player_, *dialogueBox_, storyFlags_};
+	StoryContext ctx{*player_, *dialogueBox_, storyFlags_,
+	                 currentMap_->getActivatedReceiverCount()};
 	storyManager_.update(deltaTime, ctx);
 
 	// マップ遷移リクエストがあれば次のマップへ
@@ -75,6 +78,7 @@ void GameScene::update(float deltaTime, SceneManager& sm) {
 	// プレイヤーの更新とマップの衝突判定
 	player_->update(deltaTime);
 	collision_->resolve();
+	currentMap_->resolvePush(*player_);
 
 	// マップの更新（敵の移動やマップイベントの発火）
 	switch (currentMap_->update(deltaTime, *player_)) {
@@ -93,6 +97,7 @@ void GameScene::render(Renderer& renderer) {
 	if (currentMap_) {
 		currentMap_->drawBackground(renderer);
 		currentMap_->drawEnemy(renderer);
+		currentMap_->drawLight(renderer);
 	}
 
 	if (player_->active) {
@@ -101,8 +106,22 @@ void GameScene::render(Renderer& renderer) {
 
 	if (currentMap_) {
 		currentMap_->drawForeground(renderer);
+		currentMap_->drawLight(renderer);
 	}
+
+	// オーバーレイ: 会話ボックスより下、ゲーム画面より上
+	if (currentMap_)
+		currentMap_->drawLightOverlay(renderer, windowWidth_, windowHeight_);
 
 	// HUD層: 会話ボックスはワールド描画の後に重ねる
 	dialogueBox_->draw(renderer, *font_);
+
+	// パララックスオーバーレイ
+	if (currentMap_)
+		currentMap_->drawParallaxOverlay(renderer, windowWidth_, windowHeight_,
+		                                 camera_->getPosition().x);
+
+	// 最前面: ゲーム全体の色味オーバーレイ
+	if (currentMap_)
+		currentMap_->drawColorOverlay(renderer, windowWidth_, windowHeight_);
 }

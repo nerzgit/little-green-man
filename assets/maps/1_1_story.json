@@ -14,9 +14,9 @@
       ]
     },
     {
-      "id": "map1_1_zone_a",
+      "id": "map1_1_receiver_clear",
       "once": true,
-      "trigger": { "type": "zone", "x": 800, "y": 0, "w": 128, "h": 1024 },
+      "trigger": { "type": "receiver_count", "count": 8 },
       "actions": [
         {
           "type": "next_map"

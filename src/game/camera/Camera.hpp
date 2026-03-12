@@ -11,7 +11,8 @@ public:
 	Camera(const Player& player, int windowWidth, int windowHeight,
 	       float stageWidth, float stageHeight);
 
-	void apply(Renderer& renderer);
+	void      apply(Renderer& renderer);
+	glm::vec2 getPosition() const { return position_; }
 
 private:
 	const Player& player_;

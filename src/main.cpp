@@ -1,6 +1,7 @@
 #include "engine/graphics/Renderer.hpp"
 #include "engine/input/InputManager.hpp"
 #include "engine/platform/window.hpp"
+#include "game/scene/GameScene.hpp"
 #include "game/scene/SceneManager.hpp"
 #include "game/scene/SplashScreen.hpp"
 
@@ -19,7 +20,7 @@ int main() {
 
 		// 最初のシーンはスプラッシュ画面
 		sceneManager.switchTo(
-		  std::make_unique<SplashScreen>(WINDOW_WIDTH, WINDOW_HEIGHT));
+		  std::make_unique<GameScene>(WINDOW_WIDTH, WINDOW_HEIGHT));
 
 		window.setUpdateCallback(
 		  [&sceneManager](float deltaTime) { sceneManager.update(deltaTime); });
