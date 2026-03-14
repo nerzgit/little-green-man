@@ -3,7 +3,7 @@
 #include "../../engine/graphics/Renderer.hpp"
 
 Enemy::Enemy(glm::vec2 position, float patrolDistance, float speed)
-    : Entity(position, 24.0f)
+    : Entity(position, 48.0f)
     , originX_(position.x)
     , patrolDistance_(patrolDistance)
     , speed_(speed) {

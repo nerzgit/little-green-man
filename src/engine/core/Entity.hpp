@@ -25,8 +25,9 @@ public:
 	}
 
 	bool intersects(const Entity& other) const {
+		// size は直径。衝突判定は「2つの円の半径の和」なので (size + other.size) / 2
 		float distance = glm::distance(position, other.position);
-		return distance < (size + other.size);
+		return distance < (size + other.size) / 2.0f;
 	}
 };
 

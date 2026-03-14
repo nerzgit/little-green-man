@@ -1,10 +1,10 @@
 #include "LightReceiver.hpp"
 
-LightReceiver::LightReceiver() : activated_(false), tileId_(-1) {
+LightReceiver::LightReceiver() : activated_(false) {
 }
 
 LightReceiver::LightReceiver(glm::vec2 pos, int tileId)
-    : Entity(pos, 10.0f), activated_(false), tileId_(tileId) {
+    : LightTile(pos, tileId), activated_(false) {
 }
 
 LightReceiver::~LightReceiver() {

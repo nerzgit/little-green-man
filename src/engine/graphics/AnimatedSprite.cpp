@@ -30,10 +30,10 @@ void AnimatedSprite::update(float deltaTime) {
 	}
 }
 
-const Texture& AnimatedSprite::currentTexture() const {
+const SpriteFrame& AnimatedSprite::currentFrame() const {
 	if (currentAnim_.empty()) {
 		throw std::runtime_error("AnimatedSprite: no animation is playing");
 	}
 	const auto& anim = animations_.at(currentAnim_);
-	return *anim.frames[currentFrame_];
+	return anim.frames[currentFrame_];
 }

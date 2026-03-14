@@ -13,6 +13,23 @@
 
 class FontAtlas;
 
+// drawSprite の起点を指定するビットフラグ
+// 例: SpriteAnchor::LEFT | SpriteAnchor::TOP → 左上を起点にする
+// X/Y どちらも指定しない場合は中央が起点
+enum class SpriteAnchor : int {
+	CENTER = 0,
+	LEFT   = 1 << 0,
+	RIGHT  = 1 << 1,
+	TOP    = 1 << 2,
+	BOTTOM = 1 << 3,
+};
+inline SpriteAnchor operator|(SpriteAnchor a, SpriteAnchor b) {
+	return static_cast<SpriteAnchor>(static_cast<int>(a) | static_cast<int>(b));
+}
+inline bool hasAnchor(SpriteAnchor flags, SpriteAnchor flag) {
+	return (static_cast<int>(flags) & static_cast<int>(flag)) != 0;
+}
+
 class Renderer {
 public:
 	Renderer(int windowWidth, int windowHeight);
@@ -20,7 +37,10 @@ public:
 
 	void clear();
 	void drawSprite(const Texture& texture, const glm::vec2& position,
-	                float width, float height);
+	                float width, float height,
+	                SpriteAnchor anchor = SpriteAnchor::CENTER,
+	                glm::vec2    uvMin  = {0.0f, 0.0f},
+	                glm::vec2    uvMax  = {1.0f, 1.0f});
 	void drawTile(const Texture& texture, const glm::vec2& position,
 	              float width, float height,
 	              glm::vec2 uvMin, glm::vec2 uvMax);

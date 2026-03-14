@@ -1,10 +1,10 @@
 #include "LightMirror.hpp"
 
-LightMirror::LightMirror() : direction_(Direction::UPLEFT), tileId_(-1) {
+LightMirror::LightMirror() : direction_(Direction::UPLEFT) {
 }
 
 LightMirror::LightMirror(glm::vec2 pos, Direction dir, int tileId)
-    : Entity(pos, 10.0f), direction_(dir), tileId_(tileId) {
+    : LightTile(pos, tileId), direction_(dir) {
 }
 
 LightMirror::~LightMirror() {

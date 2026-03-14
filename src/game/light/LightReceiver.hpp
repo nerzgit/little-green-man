@@ -1,9 +1,9 @@
 #ifndef LIGHT_RECEIVER_HPP
 #define LIGHT_RECEIVER_HPP
 
-#include "../../engine/core/Entity.hpp"
+#include "LightTile.hpp"
 
-class LightReceiver : public Entity {
+class LightReceiver : public LightTile {
 public:
 	LightReceiver();
 	LightReceiver(glm::vec2 pos, int tileId);
@@ -11,11 +11,9 @@ public:
 
 	void setActivated(bool activated);
 	bool isActivated() const;
-	int  getTileId() const { return tileId_; }
 
 private:
 	bool activated_;
-	int  tileId_;
 };
 
 #endif // LIGHT_RECEIVER_HPP

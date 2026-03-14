@@ -2,6 +2,7 @@
 #define TILESET_LOADER_HPP
 
 #include "../../engine/graphics/Texture.hpp"
+#include <memory>
 #include <string>
 
 class Renderer;
@@ -17,10 +18,8 @@ public:
 	          float displaySize) const;
 
 private:
-	static constexpr int kTilePixels = 32;
-
-	Texture tileset_;
-	int     tilesetCols_;
+	std::shared_ptr<Texture> tileset_;
+	int                      tilesetCols_;
 };
 
 #endif // TILESET_LOADER_HPP

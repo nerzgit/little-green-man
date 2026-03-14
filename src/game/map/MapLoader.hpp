@@ -13,8 +13,6 @@ struct Tile {
 
 class MapLoader {
 public:
-	static constexpr float kTileSize = 64.0f;
-
 	MapLoader();
 	~MapLoader();
 

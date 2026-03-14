@@ -1,43 +1,42 @@
 #include "Map.hpp"
 
 #include "../../engine/graphics/Renderer.hpp"
+#include "../GameConstants.hpp"
+#include "../enemy/EnemySystem.hpp"
 #include "../light/LightSystem.hpp"
 #include "../player/Player.hpp"
 #include "MapLoader.hpp"
 #include <memory>
 
-Map::Map() : lightSystem_(std::make_unique<LightSystem>()) {};
+Map::Map()
+    : lightSystem_(std::make_unique<LightSystem>())
+    , enemySystem_(std::make_unique<EnemySystem>()) {
+	drawableSources_ = {enemySystem_.get(), lightSystem_.get()};
+};
 
 Map::~Map() = default;
 
 void Map::start() {
-	enemies_.clear();
-	enemyResolvers_.clear();
-
 	if (mapLayers_.empty())
 		return;
 
-	const float ts          = MapLoader::kTileSize;
+	const float ts          = GameConstants::kTileSize;
 	const float stageWidth  = getPixelWidth();
 	const float stageHeight = getPixelHeight();
+
+	std::vector<glm::vec2> spawnPositions;
 	for (const auto& layer : mapLayers_) {
 		for (const auto& [col, row] : layer.loader->getEnemySpawns()) {
-			enemies_.emplace_back(std::make_unique<Enemy>(
-			  glm::vec2(col * ts + ts / 2.0f, row * ts + ts / 2.0f), 150.0f));
-			enemyResolvers_.emplace_back(std::make_unique<CollisionResolver>(
-			  *enemies_.back(), *this, stageWidth, stageHeight));
+			spawnPositions.emplace_back(col * ts + ts / 2.0f,
+			                            row * ts + ts / 2.0f);
 		}
 	}
+	enemySystem_->spawnFrom(spawnPositions, stageWidth, stageHeight, *this);
 }
 
 MapEvent Map::update(float deltaTime, Player& player) {
-	for (size_t i = 0; i < enemies_.size(); ++i) {
-		enemies_[i]->update(deltaTime);
-		enemyResolvers_[i]->resolve();
-		if (player.intersects(*enemies_[i])) {
-			return MapEvent::PlayerDead;
-		}
-	}
+	if (enemySystem_->update(deltaTime, player))
+		return MapEvent::PlayerDead;
 	lightSystem_->update(deltaTime, *this);
 	lightSystem_->trace(*this);
 	return MapEvent::None;
@@ -59,77 +58,27 @@ int Map::getActivatedReceiverCount() const {
 	return lightSystem_->getActivatedReceiverCount();
 }
 
-void Map::setLightOverlayColor(int index, const glm::vec4& rgba) {
-	lightSystem_->setOverlayColor(index, rgba);
-}
-
-void Map::drawLightOverlay(Renderer& renderer, int windowWidth,
-                           int windowHeight) const {
+void Map::drawEffects(Renderer& renderer, int windowWidth, int windowHeight,
+                      float cameraX) const {
+	lightSystem_->draw(renderer);
 	lightSystem_->drawOverlay(renderer, windowWidth, windowHeight);
-}
-
-void Map::drawColorOverlay(Renderer& renderer, int windowWidth,
-                           int windowHeight) const {
+	parallaxOverlay_.draw(renderer, windowWidth, windowHeight, cameraX);
 	colorOverlay_.draw(renderer, windowWidth, windowHeight);
 }
 
-void Map::loadParallaxOverlay(const std::string& path, float speed) {
-	parallaxOverlay_.speed = speed;
-	parallaxOverlay_.load(path);
+void Map::collectDrawables(std::vector<Drawable>& out) {
+	for (auto* src : drawableSources_)
+		src->collectDrawables(out);
 }
 
-void Map::drawParallaxOverlay(Renderer& renderer, int windowWidth,
-                              int windowHeight, float playerX) const {
-	parallaxOverlay_.draw(renderer, windowWidth, windowHeight, playerX);
-}
-
-void Map::loadLightTileset(const std::string& path) {
-	lightSystem_->loadTileset(path);
-}
-
-void Map::loadLightSources(const std::string& path) {
-	lightSystem_->loadLightSources(path);
-}
-
-void Map::loadMirrors(const std::string& path) {
-	lightSystem_->loadMirrors(path);
-}
-
-void Map::loadReceivers(const std::string& path) {
-	lightSystem_->loadReceivers(path);
-}
-
-void Map::drawEnemy(Renderer& renderer) {
-	for (auto& enemy : enemies_) {
-		enemy->draw(renderer);
-	}
-}
-
-void Map::drawLight(Renderer& renderer) {
-	lightSystem_->draw(renderer);
-}
-
-void Map::drawBackground(Renderer& renderer) {
+void Map::draw(Renderer& renderer, DrawLayer layer) {
 	if (!tileset_) {
-		throw std::runtime_error(
-		  "Failed to draw background map: Tileset not loaded");
+		throw std::runtime_error("Tileset not loaded");
 	}
-	for (const auto& layer : mapLayers_) {
-		if (layer.drawLayer != DrawLayer::Background)
+	for (const auto& ml : mapLayers_) {
+		if (ml.drawLayer != layer)
 			continue;
-		tileset_->draw(renderer, *layer.loader, MapLoader::kTileSize);
-	}
-}
-
-void Map::drawForeground(Renderer& renderer) {
-	if (!tileset_) {
-		throw std::runtime_error(
-		  "Failed to draw foreground map: Tileset not loaded");
-	}
-	for (const auto& layer : mapLayers_) {
-		if (layer.drawLayer != DrawLayer::Foreground)
-			continue;
-		tileset_->draw(renderer, *layer.loader, MapLoader::kTileSize);
+		tileset_->draw(renderer, *ml.loader, GameConstants::kTileSize);
 	}
 }
 
@@ -138,8 +87,8 @@ bool Map::isMirrorAt(float x, float y) const {
 }
 
 void Map::resolvePush(Entity& pusher) {
-	const float ts = MapLoader::kTileSize;
-	const float r  = pusher.size;
+	const float ts = GameConstants::kTileSize;
+	const float r  = pusher.size / 2.0f;
 	glm::vec2&  pos = pusher.position;
 
 	// 左エッジがミラーに入ったら左に押し出し試行
@@ -191,7 +140,7 @@ bool Map::isTriggerAt(float x, float y) const {
 glm::vec2 Map::getPlayerSpawnPosition() const {
 	if (mapLayers_.empty())
 		return {};
-	const float ts = MapLoader::kTileSize;
+	const float ts = GameConstants::kTileSize;
 	const float col =
 	  static_cast<float>(mapLayers_[0].loader->getPlayerSpawnCol());
 	const float row =
@@ -202,11 +151,11 @@ glm::vec2 Map::getPlayerSpawnPosition() const {
 float Map::getPixelWidth() const {
 	return mapLayers_.empty() ?
 	         0.0f :
-	         mapLayers_[0].loader->getWidth() * MapLoader::kTileSize;
+	         mapLayers_[0].loader->getWidth() * GameConstants::kTileSize;
 }
 
 float Map::getPixelHeight() const {
 	return mapLayers_.empty() ?
 	         0.0f :
-	         mapLayers_[0].loader->getHeight() * MapLoader::kTileSize;
+	         mapLayers_[0].loader->getHeight() * GameConstants::kTileSize;
 }

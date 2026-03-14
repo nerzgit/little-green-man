@@ -102,16 +102,26 @@ void Renderer::initTextureBuffers() {
 }
 
 void Renderer::drawSprite(const Texture& texture, const glm::vec2& position,
-                          float width, float height) {
-	float halfWidth  = width / 2.0f;
-	float halfHeight = height / 2.0f;
+                          float width, float height, SpriteAnchor anchor,
+                          glm::vec2 uvMin, glm::vec2 uvMax) {
+	// X 方向オフセット: LEFT → 左端がposition.x, RIGHT → 右端がposition.x, それ以外 → 中央
+	float xOff = hasAnchor(anchor, SpriteAnchor::LEFT)  ?  0.0f
+	           : hasAnchor(anchor, SpriteAnchor::RIGHT)  ? -width
+	           : -width / 2.0f;
 
-	// x, y, u, v per vertex (center-based position, Y-down)
+	// Y 方向オフセット: TOP → 上端がposition.y, BOTTOM → 下端がposition.y, それ以外 → 中央
+	float yOff = hasAnchor(anchor, SpriteAnchor::TOP)    ?  0.0f
+	           : hasAnchor(anchor, SpriteAnchor::BOTTOM) ? -height
+	           : -height / 2.0f;
+
+	float x0 = position.x + xOff;
+	float y0 = position.y + yOff;
+	float x1 = x0 + width;
+	float y1 = y0 + height;
+
 	float vertices[] = {
-	  position.x - halfWidth, position.y - halfHeight, 0.0f, 0.0f,
-	  position.x + halfWidth, position.y - halfHeight, 1.0f, 0.0f,
-	  position.x + halfWidth, position.y + halfHeight, 1.0f, 1.0f,
-	  position.x - halfWidth, position.y + halfHeight, 0.0f, 1.0f,
+	  x0, y0, uvMin.x, uvMin.y, x1, y0, uvMax.x, uvMin.y,
+	  x1, y1, uvMax.x, uvMax.y, x0, y1, uvMin.x, uvMax.y,
 	};
 
 	textureShader_->use();
@@ -130,8 +140,8 @@ void Renderer::drawSprite(const Texture& texture, const glm::vec2& position,
 }
 
 void Renderer::drawTile(const Texture& texture, const glm::vec2& position,
-                         float width, float height,
-                         glm::vec2 uvMin, glm::vec2 uvMax) {
+                        float width, float height, glm::vec2 uvMin,
+                        glm::vec2 uvMax) {
 	float halfWidth  = width / 2.0f;
 	float halfHeight = height / 2.0f;
 
@@ -269,8 +279,8 @@ void Renderer::drawRectHUD(const glm::vec2& position, float width, float height,
 	textureShader_->setInt("tex", 0);
 	whiteTexture_->bind(0);
 
-	float     halfW    = width / 2.0f;
-	float     halfH    = height / 2.0f;
+	float halfW      = width / 2.0f;
+	float halfH      = height / 2.0f;
 	float vertices[] = {
 	  position.x - halfW, position.y - halfH, 0.0f, 0.0f,
 	  position.x + halfW, position.y - halfH, 1.0f, 0.0f,
@@ -287,23 +297,22 @@ void Renderer::drawRectHUD(const glm::vec2& position, float width, float height,
 	textureShader_->setMat4("projection", worldProjection_);
 }
 
-void Renderer::drawParallaxHUD(const Texture& texture, int windowWidth,
+void Renderer::drawParallaxHUD(const Texture& texture, int texWidth,
                                int windowHeight, float uvOffsetX) {
-	float w = static_cast<float>(windowWidth);
-	float h = static_cast<float>(windowHeight);
+	float winW = static_cast<float>(windowWidth_);
+	float winH = static_cast<float>(windowHeight_);
+	float texW = static_cast<float>(texWidth);
+	float h    = static_cast<float>(windowHeight);
 
-	// uvOffsetX でX方向にスクロール、Y は 0〜1 固定
-	float u0 = uvOffsetX;
-	float u1 = uvOffsetX + 1.0f;
+	// 頂点幅はテクスチャ幅、projection はウィンドウサイズ
+	float u0         = uvOffsetX;
+	float u1         = uvOffsetX + 1.0f;
 	float vertices[] = {
-	  0.0f, 0.0f, u0, 0.0f,
-	  w,    0.0f, u1, 0.0f,
-	  w,    h,    u1, 1.0f,
-	  0.0f, h,    u0, 1.0f,
+	  0.0f, 0.0f, u0, 0.0f, texW, 0.0f, u1, 0.0f,
+	  texW, h,    u1, 1.0f, 0.0f, h,    u0, 1.0f,
 	};
 
-	glm::mat4 hudProjection =
-	  glm::ortho(0.0f, w, h, 0.0f);
+	glm::mat4 hudProjection = glm::ortho(0.0f, winW, winH, 0.0f);
 
 	textureShader_->use();
 	textureShader_->setMat4("projection", hudProjection);

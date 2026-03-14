@@ -1,8 +1,8 @@
 #include "CollisionResolver.hpp"
 
 #include "../../engine/core/Entity.hpp"
+#include "../GameConstants.hpp"
 #include "../map/Map.hpp"
-#include "../map/MapLoader.hpp"
 #include <algorithm>
 
 CollisionResolver::CollisionResolver(Entity& entity, Map& map, float stageWidth,
@@ -14,8 +14,8 @@ CollisionResolver::CollisionResolver(Entity& entity, Map& map, float stageWidth,
 }
 
 void CollisionResolver::resolve() {
-	const float ts  = MapLoader::kTileSize;
-	const float r   = entity_.size;
+	const float ts  = GameConstants::kTileSize;
+	const float r   = entity_.size / 2.0f;
 	glm::vec2&  pos = entity_.position;
 
 	// X軸：左端・右端が壁に入ったら押し戻す

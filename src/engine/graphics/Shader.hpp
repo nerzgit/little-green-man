@@ -15,6 +15,9 @@ public:
 	Shader(const char* vertexSource, const char* fragmentSource);
 	~Shader();
 
+	Shader(const Shader&)            = delete;
+	Shader& operator=(const Shader&) = delete;
+
 	void use() const;
 	void setInt(const std::string& name, int value) const;
 	void setVec3(const std::string& name, float x, float y, float z) const;

@@ -21,8 +21,10 @@ public:
 		if (!texture_)
 			return;
 		// playerX をUV空間のオフセットに変換
-		float uvOffsetX = (playerX * speed) / static_cast<float>(texture_->width);
-		renderer.drawParallaxHUD(*texture_, windowWidth, windowHeight, uvOffsetX);
+		float uvOffsetX =
+		  (playerX * speed) / static_cast<float>(texture_->width);
+		renderer.drawParallaxHUD(*texture_, texture_->width, windowHeight,
+		                         uvOffsetX);
 	}
 
 private:

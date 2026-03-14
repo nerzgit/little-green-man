@@ -2,6 +2,7 @@
 #define LIGHT_SYSTEM_HPP
 
 #include "../../engine/graphics/Texture.hpp"
+#include "../IDrawableSource.hpp"
 #include "LightBeam.hpp"
 #include "LightMirror.hpp"
 #include "LightReceiver.hpp"
@@ -15,13 +16,14 @@
 class Renderer;
 class Map;
 
-class LightSystem {
+class LightSystem : public IDrawableSource {
 public:
 	LightSystem();
 	~LightSystem();
 
 	void update(float deltaTime, Map& map);
-	void draw(Renderer& renderer) const;
+	void collectDrawables(std::vector<Drawable>& out) const override;
+	void draw(Renderer& renderer) const; // ビームのみ描画
 	void trace(Map& map);
 	bool isReceiverActivated() const;
 	int  getActivatedReceiverCount() const;
@@ -43,10 +45,9 @@ public:
 	void loadReceivers(const std::string& path);
 
 private:
-	static constexpr int kMaxSteps   = 100;
-	static constexpr int kTilePixels = 32;
+	static constexpr int kMaxSteps = 100;
 
-	std::unique_ptr<Texture> tileset_;
+	std::shared_ptr<Texture> tileset_;
 	int                      tilesetCols_ = 0;
 
 	std::vector<LightSource>   lightSources_;

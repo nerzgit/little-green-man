@@ -1,5 +1,6 @@
 #include "MapLoader.hpp"
 
+#include "../GameConstants.hpp"
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
@@ -65,13 +66,13 @@ TileType MapLoader::getTileType(int col, int row) const {
 }
 
 bool MapLoader::isWallAt(float x, float y) const {
-	int col = static_cast<int>(x / kTileSize);
-	int row = static_cast<int>(y / kTileSize);
+	int col = static_cast<int>(x / GameConstants::kTileSize);
+	int row = static_cast<int>(y / GameConstants::kTileSize);
 	return getTile(col, row).type == TileType::WALL;
 }
 
 bool MapLoader::isTriggerAt(float x, float y) const {
-	int col = static_cast<int>(x / kTileSize);
-	int row = static_cast<int>(y / kTileSize);
+	int col = static_cast<int>(x / GameConstants::kTileSize);
+	int row = static_cast<int>(y / GameConstants::kTileSize);
 	return getTile(col, row).type == TileType::TRIGGER;
 }

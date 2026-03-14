@@ -10,38 +10,65 @@
 #include "../player/Player.hpp"
 #include "GameOverScene.hpp"
 #include "SceneManager.hpp"
-#include "TitleScreen.hpp"
+#include <algorithm>
 
 GameScene::GameScene(int windowWidth, int windowHeight)
     : windowWidth_(windowWidth), windowHeight_(windowHeight) {
-	font_ = std::make_unique<FontAtlas>("assets/fonts/PixelMplus12-Regular.ttf",
-	                                    24.0f, 2048);
+	/**
+	 * ゲームシステム全体で使うフォント
+	 */
+	font_ = std::make_unique<FontAtlas>(kFontName, kFontSize, kFontAtlasSize);
+
+	/**
+	 * 会話ボックス
+	 */
 	dialogueBox_ = std::make_unique<DialogueBox>(windowWidth, windowHeight);
 
-	// Player は仮位置で生成し、loadMap 内で正しい位置に移動する
-	player_ = std::make_unique<Player>(glm::vec2(0, 0));
+	/**
+	 * プレイヤーの初期座標
+	 */
+	player_ = std::make_unique<Player>();
 
+	/**
+	 * 最初のマップをロード
+	 */
 	loadMap(std::make_unique<Map1_1>());
 }
 
 GameScene::~GameScene() = default;
 
 void GameScene::loadMap(std::unique_ptr<Map> newMap) {
+	/**
+	 * マップを切り替える際の処理
+	 * - マップの start() を呼び出す
+	 */
 	currentMap_ = std::move(newMap);
 	currentMap_->start();
 
-	// プレイヤーをスポーン位置に移動
+	/**
+	 * プレイヤーをスポーン位置に移動
+	 */
 	player_->position = currentMap_->getPlayerSpawnPosition();
 	player_->velocity = glm::vec2(0, 0);
 
 	const float stageWidth  = currentMap_->getPixelWidth();
 	const float stageHeight = currentMap_->getPixelHeight();
 
+	/**
+	 * 衝突判定計算を実行する CollisionResolver を生成
+	 */
 	collision_ = std::make_unique<CollisionResolver>(*player_, *currentMap_,
 	                                                 stageWidth, stageHeight);
-	camera_    = std::make_unique<Camera>(*player_, windowWidth_, windowHeight_,
-	                                      stageWidth, stageHeight);
 
+	/**
+	 * カメラを生成
+	 */
+	camera_ = std::make_unique<Camera>(*player_, windowWidth_, windowHeight_,
+	                                   stageWidth, stageHeight);
+
+	/**
+	 * ストーリーは各マップごとのイベントや会話を管理するため、マップ切り替えのタイミングでロードし直す
+	 */
 	storyManager_.load(currentMap_->getStoryPath());
 }
 
@@ -58,29 +85,43 @@ void GameScene::update(float deltaTime, SceneManager& sm) {
 	// 会話ボックスの更新（文字送りや閉じる操作の受付）
 	dialogueBox_->update(deltaTime);
 
-	// ストーリーイベントの更新（トリガーチェックとアクション実行）
-	StoryContext ctx{*player_, *dialogueBox_, storyFlags_,
-	                 currentMap_->getActivatedReceiverCount()};
-	storyManager_.update(deltaTime, ctx);
+	/**
+	 * ストーリーの更新
+	 * - 会話の開始・終了
+	 * - 演出のトリガー
+	 * - マップ遷移のリクエスト
+	 * これ以外に増えたら都度追加する
+	 */
+	StoryContext storyCtx{*player_, *dialogueBox_, storyFlags_,
+	                      currentMap_->getActivatedReceiverCount()};
+	storyManager_.update(deltaTime, storyCtx);
 
-	// マップ遷移リクエストがあれば次のマップへ
-	if (ctx.mapTransitionRequested) {
+	/**
+	 * マップ遷移のリクエストがあったら次のマップに切り替える
+	 */
+	if (storyCtx.mapTransitionRequested) {
 		if (auto next = currentMap_->createNextMap()) {
 			loadMap(std::move(next));
 		}
 		return;
 	}
 
-	// ストーリー実行中（会話・演出）はプレイヤー操作をブロック
+	/**
+	 * ストーリー実行中（会話・演出）はプレイヤー操作をブロック
+	 */
 	if (storyManager_.isBlocking())
 		return;
 
-	// プレイヤーの更新とマップの衝突判定
 	player_->update(deltaTime);
+
 	collision_->resolve();
+
 	currentMap_->resolvePush(*player_);
 
-	// マップの更新（敵の移動やマップイベントの発火）
+	/**
+	 * マップの update() は MapEvent を返す。これが PlayerDead
+	 * ならゲームオーバーに遷移する。
+	 */
 	switch (currentMap_->update(deltaTime, *player_)) {
 	case MapEvent::PlayerDead:
 		sm.switchTo(std::make_unique<GameOverScene>(sm.getWindowWidth(),
@@ -90,38 +131,30 @@ void GameScene::update(float deltaTime, SceneManager& sm) {
 	}
 }
 
+void GameScene::drawYSorted(Renderer& renderer) {
+	std::vector<Drawable> drawables;
+	currentMap_->collectDrawables(drawables);
+	if (player_->active)
+		drawables.push_back(
+		  {player_->position.y, [&](Renderer& r) { player_->draw(r); }});
+	std::sort(drawables.begin(), drawables.end(),
+	          [](const Drawable& a, const Drawable& b) {
+		          return a.sortY < b.sortY;
+	          });
+	for (auto& d : drawables)
+		d.draw(renderer);
+}
+
 void GameScene::render(Renderer& renderer) {
 	camera_->apply(renderer);
 	renderer.clear();
 
-	if (currentMap_) {
-		currentMap_->drawBackground(renderer);
-		currentMap_->drawEnemy(renderer);
-		currentMap_->drawLight(renderer);
-	}
+	currentMap_->draw(renderer, DrawLayer::Background);
+	drawYSorted(renderer);
+	currentMap_->draw(renderer, DrawLayer::Foreground);
+	currentMap_->drawEffects(renderer, windowWidth_, windowHeight_,
+	                         camera_->getPosition().x);
 
-	if (player_->active) {
-		player_->draw(renderer);
-	}
-
-	if (currentMap_) {
-		currentMap_->drawForeground(renderer);
-		currentMap_->drawLight(renderer);
-	}
-
-	// オーバーレイ: 会話ボックスより下、ゲーム画面より上
-	if (currentMap_)
-		currentMap_->drawLightOverlay(renderer, windowWidth_, windowHeight_);
-
-	// パララックスオーバーレイ
-	if (currentMap_)
-		currentMap_->drawParallaxOverlay(renderer, windowWidth_, windowHeight_,
-		                                 camera_->getPosition().x);
-
-	// 最前面: ゲーム全体の色味オーバーレイ
-	if (currentMap_)
-		currentMap_->drawColorOverlay(renderer, windowWidth_, windowHeight_);
-
-	// HUD層: 会話ボックスはワールド描画の後に重ねる
+	// HUD層: ワールド描画の後に重ねる
 	dialogueBox_->draw(renderer, *font_);
 }

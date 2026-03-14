@@ -63,6 +63,8 @@ GLuint Shader::compileShader(GLenum type, const char* source) {
 		char infoLog[512];
 		glGetShaderInfoLog(shader, 512, nullptr, infoLog);
 		std::cerr << "Shader compilation failed:\n" << infoLog << std::endl;
+		glDeleteShader(shader);
+		return 0;
 	}
 
 	return shader;

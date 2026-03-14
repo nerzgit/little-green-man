@@ -17,6 +17,9 @@ public:
 	Texture(int width, int height, const unsigned char* rgba);
 	~Texture();
 
+	Texture(const Texture&)            = delete;
+	Texture& operator=(const Texture&) = delete;
+
 	void bind(GLuint unit = 0) const;
 	void update(const unsigned char* rgba);
 };

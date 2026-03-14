@@ -1,10 +1,10 @@
 #include "LightSource.hpp"
 
-LightSource::LightSource() : direction_(Direction::RIGHT), tileId_(-1) {
+LightSource::LightSource() : direction_(Direction::RIGHT) {
 }
 
 LightSource::LightSource(glm::vec2 pos, Direction dir, int tileId)
-    : Entity(pos, 10.0f), direction_(dir), tileId_(tileId) {
+    : LightTile(pos, tileId), direction_(dir) {
 }
 
 LightSource::~LightSource() {

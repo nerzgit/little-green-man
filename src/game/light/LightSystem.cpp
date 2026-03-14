@@ -1,8 +1,8 @@
 #include "LightSystem.hpp"
 #include "../../engine/graphics/Renderer.hpp"
-#include "../../engine/graphics/Texture.hpp"
+#include "../../engine/graphics/TextureCache.hpp"
+#include "../GameConstants.hpp"
 #include "../map/Map.hpp"
-#include "../map/MapLoader.hpp"
 #include "LightMirror.hpp"
 #include "LightSource.hpp"
 #include <algorithm>
@@ -26,8 +26,8 @@ void LightSystem::drawTile(Renderer& renderer, int tileId,
                            const glm::vec2& position) const {
 	if (!tileset_ || tileId < 0)
 		return;
-	const float ts      = MapLoader::kTileSize;
-	const float srcSize = static_cast<float>(kTilePixels);
+	const float ts      = GameConstants::kTileSize;
+	const float srcSize = static_cast<float>(GameConstants::kTilePixels);
 	const float texW    = static_cast<float>(tileset_->width);
 	const float texH    = static_cast<float>(tileset_->height);
 	int         tileCol = tileId % tilesetCols_;
@@ -39,16 +39,23 @@ void LightSystem::drawTile(Renderer& renderer, int tileId,
 	renderer.drawTile(*tileset_, center, ts, ts, uvMin, uvMax);
 }
 
+void LightSystem::collectDrawables(std::vector<Drawable>& out) const {
+	const float ts      = GameConstants::kTileSize;
+	auto        addTile = [&](const LightTile& t) {
+        glm::vec2 pos = t.getDrawPosition();
+        out.push_back({pos.y + ts, [this, &t](Renderer& r) {
+                           drawTile(r, t.getTileId(), t.getDrawPosition());
+                       }});
+	};
+	for (const auto& m : lightMirrors_)
+		addTile(m);
+	for (const auto& r : lightReceivers_)
+		addTile(r);
+	for (const auto& s : lightSources_)
+		addTile(s);
+}
+
 void LightSystem::draw(Renderer& renderer) const {
-	for (const auto& mirror : lightMirrors_) {
-		drawTile(renderer, mirror.getTileId(), mirror.getDrawPosition());
-	}
-	for (const auto& receiver : lightReceivers_) {
-		drawTile(renderer, receiver.getTileId(), receiver.position);
-	}
-	for (const auto& source : lightSources_) {
-		drawTile(renderer, source.getTileId(), source.position);
-	}
 	lightBeam_.draw(renderer);
 }
 
@@ -64,7 +71,7 @@ void LightSystem::trace(Map& map) {
 
 		for (int step = 0; step < kMaxSteps; ++step) {
 			glm::vec2 nextPos =
-			  nextPosition(lightPos, dir, MapLoader::kTileSize);
+			  nextPosition(lightPos, dir, GameConstants::kTileSize);
 
 			// 壁: 壁の位置を終点として登録して停止
 			if (map.isWallAt(nextPos.x, nextPos.y)) {
@@ -136,7 +143,7 @@ void LightSystem::drawOverlay(Renderer& renderer, int windowWidth,
 }
 
 LightMirror* LightSystem::getMirrorAt(const glm::vec2& position) {
-	const float ts  = MapLoader::kTileSize;
+	const float ts  = GameConstants::kTileSize;
 	int         col = static_cast<int>(position.x / ts);
 	int         row = static_cast<int>(position.y / ts);
 	for (auto& mirror : lightMirrors_) {
@@ -150,7 +157,7 @@ LightMirror* LightSystem::getMirrorAt(const glm::vec2& position) {
 }
 
 LightReceiver* LightSystem::getReceiverAt(const glm::vec2& position) {
-	const float ts  = MapLoader::kTileSize;
+	const float ts  = GameConstants::kTileSize;
 	int         col = static_cast<int>(position.x / ts);
 	int         row = static_cast<int>(position.y / ts);
 	for (auto& receiver : lightReceivers_) {
@@ -164,7 +171,7 @@ LightReceiver* LightSystem::getReceiverAt(const glm::vec2& position) {
 }
 
 bool LightSystem::isMirrorAt(const glm::vec2& position) const {
-	const float ts  = MapLoader::kTileSize;
+	const float ts  = GameConstants::kTileSize;
 	int         col = static_cast<int>(position.x / ts);
 	int         row = static_cast<int>(position.y / ts);
 	for (const auto& mirror : lightMirrors_) {
@@ -195,7 +202,7 @@ bool LightSystem::tryPush(const glm::vec2& touchPos, glm::vec2 pushDir,
 	if (mirror->isMoving())
 		return false;
 
-	const float ts     = MapLoader::kTileSize;
+	const float ts     = GameConstants::kTileSize;
 	glm::vec2   newPos = mirror->position + pushDir * ts;
 
 	// ステージ外チェック
@@ -220,8 +227,8 @@ bool LightSystem::tryPush(const glm::vec2& touchPos, glm::vec2 pushDir,
 }
 
 void LightSystem::loadTileset(const std::string& path) {
-	tileset_     = std::make_unique<Texture>(path);
-	tilesetCols_ = tileset_->width / kTilePixels;
+	tileset_     = TextureCache::get(path);
+	tilesetCols_ = tileset_->width / GameConstants::kTilePixels;
 }
 
 // CSV を走査し、tileId != -1 のセルごとに onTile(tileId, pos)
@@ -242,8 +249,8 @@ parseTileCsv(const std::string&                                path,
 		while (std::getline(ss, cell, ',')) {
 			int tileId = std::stoi(cell);
 			if (tileId != -1) {
-				glm::vec2 pos(col * MapLoader::kTileSize,
-				              row * MapLoader::kTileSize);
+				glm::vec2 pos(col * GameConstants::kTileSize,
+				              row * GameConstants::kTileSize);
 				onTile(tileId, pos);
 			}
 			++col;

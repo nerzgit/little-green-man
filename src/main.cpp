@@ -3,7 +3,6 @@
 #include "engine/platform/window.hpp"
 #include "game/scene/GameScene.hpp"
 #include "game/scene/SceneManager.hpp"
-#include "game/scene/SplashScreen.hpp"
 
 #include <iostream>
 
@@ -18,13 +17,17 @@ int main() {
 		Renderer     renderer(WINDOW_WIDTH, WINDOW_HEIGHT);
 		SceneManager sceneManager(WINDOW_WIDTH, WINDOW_HEIGHT);
 
-		// 最初のシーンはスプラッシュ画面
+		// 最初のシーン選択
+		// TODO:
+		//  現在はデバッグようにGameSceneに直接飛ぶようにしているが、タイトル画面を作ったらそちらに切り替える
 		sceneManager.switchTo(
 		  std::make_unique<GameScene>(WINDOW_WIDTH, WINDOW_HEIGHT));
 
+		// 更新時ループ用コールバック
 		window.setUpdateCallback(
 		  [&sceneManager](float deltaTime) { sceneManager.update(deltaTime); });
 
+		// 描画時ループ用コールバック
 		window.setRenderCallback(
 		  [&renderer, &sceneManager]() { sceneManager.render(renderer); });
 

@@ -12,13 +12,12 @@ class Player : public Entity {
 public:
 	float speed;
 
-	Player(glm::vec2 position);
+	Player();
 	~Player();
 
-	void           update(float deltaTime) override;
-	void           draw(Renderer& renderer);
-	void           handleInput(float deltaTime);
-	const Texture& getSprite() const;
+	void update(float deltaTime) override;
+	void draw(Renderer& renderer);
+	void handleInput(float deltaTime);
 
 private:
 	std::unique_ptr<AnimatedSprite> sprite_;

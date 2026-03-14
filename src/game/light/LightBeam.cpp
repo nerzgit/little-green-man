@@ -1,5 +1,6 @@
 #include "LightBeam.hpp"
 #include "../../engine/graphics/Renderer.hpp"
+#include "../GameConstants.hpp"
 #include <cmath>
 
 LightBeam::LightBeam() {
@@ -46,7 +47,7 @@ void LightBeam::draw(Renderer& renderer) const {
 }
 
 void LightBeam::addWaypoint(const glm::vec2& position, Direction outDir) {
-	static constexpr float kTileHalf = 32.0f;
+	constexpr float kTileHalf = GameConstants::kTilePixels / 2.0f;
 	glm::vec2 center = {position.x + kTileHalf, position.y + kTileHalf};
 	waypoints_.push_back({center, outDir});
 }

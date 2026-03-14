@@ -1,29 +1,27 @@
 #ifndef LIGHT_MIRROR_HPP
 #define LIGHT_MIRROR_HPP
 
-#include "../../engine/core/Entity.hpp"
 #include "./Direction.hpp"
+#include "LightTile.hpp"
 #include <unordered_map>
 
-class LightMirror : public Entity {
+class LightMirror : public LightTile {
 public:
 	LightMirror();
 	LightMirror(glm::vec2 pos, Direction dir, int tileId);
 	~LightMirror();
 
 	Direction redirect(Direction incoming);
-	int       getTileId() const { return tileId_; }
 
 	void      startMove(const glm::vec2& from);
-	void      update(float deltaTime);
-	glm::vec2 getDrawPosition() const;
+	void      update(float deltaTime) override;
+	glm::vec2 getDrawPosition() const override;
 	bool      isMoving() const { return moveElapsed_ < kMoveDuration; }
 
 private:
 	static constexpr float kMoveDuration = 0.2f;
 
 	Direction direction_;
-	int       tileId_;
 	glm::vec2 moveFrom_    = {0.0f, 0.0f};
 	float     moveElapsed_ = kMoveDuration; // 初期値=完了済み
 };
