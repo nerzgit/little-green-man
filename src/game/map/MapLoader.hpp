@@ -34,6 +34,9 @@ public:
 	int getPlayerSpawnRow() const {
 		return playerSpawnRow_;
 	}
+	bool hasPlayerSpawn() const {
+		return hasPlayerSpawn_;
+	}
 	const std::vector<std::pair<int, int>>& getEnemySpawns() const {
 		return enemySpawns_;
 	}
@@ -42,8 +45,9 @@ private:
 	std::vector<std::vector<Tile>> tiles_;
 	int                                width_          = 0;
 	int                                height_         = 0;
-	int                                playerSpawnCol_ = 0;
-	int                                playerSpawnRow_ = 0;
+	int                                playerSpawnCol_  = 0;
+	int                                playerSpawnRow_  = 0;
+	bool                               hasPlayerSpawn_  = false;
 	std::vector<std::pair<int, int>>   enemySpawns_; // {col, row}
 };
 

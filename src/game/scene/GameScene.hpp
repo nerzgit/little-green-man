@@ -40,7 +40,8 @@ private:
 	StoryManager                    storyManager_;
 	std::unordered_set<std::string> storyFlags_;
 
-	static constexpr const char* kFontName = "PixelMplus12-Regular";
+	static constexpr const char* kFontName =
+	  "assets/fonts/PixelMplus12-Regular.ttf";
 	static constexpr float kFontSize      = 24.0f;
 	static constexpr int   kFontAtlasSize = 2048;
 };

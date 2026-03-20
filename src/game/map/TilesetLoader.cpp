@@ -19,6 +19,9 @@ void TilesetLoader::draw(Renderer& renderer, const MapLoader& mapLoader,
 
 	for (int row = 0; row < mapLoader.getHeight(); ++row) {
 		for (int col = 0; col < mapLoader.getWidth(); ++col) {
+			if (mapLoader.getTileType(col, row) == TileType::WALL)
+				continue;
+
 			int idx = mapLoader.getTile(col, row).id;
 			if (idx == -1)
 				continue;

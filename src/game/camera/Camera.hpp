@@ -11,6 +11,7 @@ public:
 	Camera(const Player& player, int windowWidth, int windowHeight,
 	       float stageWidth, float stageHeight);
 
+	void      trackPlayerWithinStage();
 	void      apply(Renderer& renderer);
 	glm::vec2 getPosition() const { return position_; }
 
@@ -21,6 +22,7 @@ private:
 	float         stageWidth_;
 	float         stageHeight_;
 	glm::vec2     position_{0.0f, 0.0f};
+	float         zoom_{1.0f};
 };
 
 #endif // CAMERA_HPP

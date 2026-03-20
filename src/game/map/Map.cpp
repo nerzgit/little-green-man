@@ -138,14 +138,15 @@ bool Map::isTriggerAt(float x, float y) const {
 }
 
 glm::vec2 Map::getPlayerSpawnPosition() const {
-	if (mapLayers_.empty())
-		return {};
 	const float ts = GameConstants::kTileSize;
-	const float col =
-	  static_cast<float>(mapLayers_[0].loader->getPlayerSpawnCol());
-	const float row =
-	  static_cast<float>(mapLayers_[0].loader->getPlayerSpawnRow());
-	return {col * ts + ts / 2.0f, row * ts + ts / 2.0f};
+	for (const auto& ml : mapLayers_) {
+		if (ml.loader->hasPlayerSpawn()) {
+			const float col = static_cast<float>(ml.loader->getPlayerSpawnCol());
+			const float row = static_cast<float>(ml.loader->getPlayerSpawnRow());
+			return {col * ts + ts / 2.0f, row * ts + ts / 2.0f};
+		}
+	}
+	return {};
 }
 
 float Map::getPixelWidth() const {

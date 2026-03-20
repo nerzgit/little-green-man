@@ -33,6 +33,7 @@ void MapLoader::loadMap(const std::string& path, TileType tileType) {
 			if (tyleId > -1 && tileType == TileType::PLAYER_SPAWN) {
 				playerSpawnCol_ = col;
 				playerSpawnRow_ = row;
+				hasPlayerSpawn_ = true;
 			} else if (tyleId > -1 && tileType == TileType::ENEMY_SPAWN) {
 				enemySpawns_.emplace_back(col, row);
 			} else {
