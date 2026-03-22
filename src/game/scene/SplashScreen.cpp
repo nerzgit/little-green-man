@@ -2,6 +2,7 @@
 
 #include "../../engine/graphics/Renderer.hpp"  // glad を GLFW より先に
 #include "../../engine/input/InputManager.hpp" // GLFW/glfw3.h
+#include "../GameConstants.hpp"
 #include "SceneManager.hpp"
 #include "TitleScreen.hpp"
 
@@ -40,7 +41,7 @@ void SplashScreen::render(Renderer& renderer) {
 	const float cy = windowHeight_ / 2.0f;
 
 	// タイトル（大きめに scale 2x）
-	renderer.drawTextHUD(*font_, "Little Green Man",
+	renderer.drawTextHUD(*font_, GameConstants::kGameTitle,
 	                     glm::vec2(cx - 190.0f, cy - 20.0f), 2.0f, green);
 
 	// サブコピー

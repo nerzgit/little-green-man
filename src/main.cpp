@@ -1,6 +1,7 @@
 #include "engine/graphics/Renderer.hpp"
 #include "engine/input/InputManager.hpp"
 #include "engine/platform/window.hpp"
+#include "game/GameConstants.hpp"
 #include "game/scene/GameScene.hpp"
 #include "game/scene/SceneManager.hpp"
 
@@ -11,7 +12,7 @@ int main() {
 		const int WINDOW_WIDTH  = 800;
 		const int WINDOW_HEIGHT = 600;
 
-		Window window(WINDOW_WIDTH, WINDOW_HEIGHT, "Little Green Man");
+		Window window(WINDOW_WIDTH, WINDOW_HEIGHT, GameConstants::kGameTitle);
 		InputManager::init(window.getGLFWWindow());
 
 		Renderer renderer(WINDOW_WIDTH, WINDOW_HEIGHT);

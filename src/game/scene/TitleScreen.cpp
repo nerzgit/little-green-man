@@ -3,6 +3,7 @@
 #include "../../engine/graphics/Renderer.hpp"  // glad を GLFW より先に
 #include "../../engine/input/InputManager.hpp" // GLFW/glfw3.h
 #include "GameScene.hpp"
+#include "../GameConstants.hpp"
 #include "SceneManager.hpp"
 
 #include <cstdlib> // exit
@@ -48,7 +49,7 @@ void TitleScreen::render(Renderer& renderer) {
 	const float cy = windowHeight_ / 2.0f;
 
 	// タイトル
-	renderer.drawTextHUD(*font_, "Little Green Man",
+	renderer.drawTextHUD(*font_, GameConstants::kGameTitle,
 	                     glm::vec2(cx - 190.0f, cy - 120.0f), 2.0f,
 	                     glm::vec3(0.2f, 0.8f, 0.2f));
 

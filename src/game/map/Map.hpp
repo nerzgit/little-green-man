@@ -16,6 +16,7 @@
 
 class Renderer;
 class Player;
+class World;
 class Texture;
 class LightSystem;
 class EnemySystem;
@@ -37,8 +38,7 @@ public:
 	}
 
 	int  getActivatedReceiverCount() const;
-	void drawEffects(Renderer& renderer, int windowWidth, int windowHeight,
-	                 float cameraX, float playerY) const;
+	void drawEffects(Renderer& renderer, World& world) const;
 	bool      isWallAt(float x, float y) const;
 	bool      isTriggerAt(float x, float y) const;
 	bool      isMirrorAt(float x, float y) const;

@@ -1,6 +1,8 @@
 #include "Map.hpp"
 
 #include "../../engine/graphics/Renderer.hpp"
+#include "../World.hpp"
+#include "../camera/Camera.hpp"
 #include "../GameConstants.hpp"
 #include "../enemy/EnemySystem.hpp"
 #include "../light/LightSystem.hpp"
@@ -58,12 +60,12 @@ int Map::getActivatedReceiverCount() const {
 	return lightSystem_->getActivatedReceiverCount();
 }
 
-void Map::drawEffects(Renderer& renderer, int windowWidth, int windowHeight,
-                      float cameraX, float playerY) const {
+void Map::drawEffects(Renderer& renderer, World& world) const {
 	lightSystem_->draw(renderer);
-	lightSystem_->drawOverlay(renderer, windowWidth, windowHeight);
-	parallaxOverlay_.draw(renderer, windowWidth, windowHeight, cameraX, playerY);
-	colorOverlay_.draw(renderer, windowWidth, windowHeight);
+	lightSystem_->drawOverlay(renderer, world.windowWidth(), world.windowHeight());
+	parallaxOverlay_.draw(renderer, world.windowWidth(), world.windowHeight(),
+	                      world.camera().getPosition().x, world.player().position.y);
+	colorOverlay_.draw(renderer, world.windowWidth(), world.windowHeight());
 }
 
 void Map::collectDrawables(std::vector<Drawable>& out) {

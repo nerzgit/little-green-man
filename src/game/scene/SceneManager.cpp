@@ -1,6 +1,5 @@
 #include "SceneManager.hpp"
 
-#include "../../engine/graphics/Renderer.hpp"
 #include <utility>
 
 SceneManager::SceneManager(int windowWidth, int windowHeight, std::unique_ptr<Scene> initialScene)
@@ -22,6 +21,8 @@ void SceneManager::update(float deltaTime) {
 		current_->update(deltaTime, *this);
 	}
 }
+
+#include "../../engine/graphics/Renderer.hpp"
 
 void SceneManager::render(Renderer& renderer) {
 	if (current_) {
