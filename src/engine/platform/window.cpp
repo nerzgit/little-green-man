@@ -50,32 +50,17 @@ void Window::framebufferSizeCallback(GLFWwindow *, int width, int height) {
 	glViewport(0, 0, width, height);
 }
 
-void Window::setUpdateCallback(std::function<void(float)> callback) {
-	updateCallback_ = callback;
-}
-
-void Window::setRenderCallback(std::function<void()> callback) {
-	renderCallback_ = callback;
-}
-
-void Window::run() {
+void Window::run(std::function<void(float)> updateCallback,
+                 std::function<void()>      renderCallback) {
 	float lastTime = static_cast<float>(glfwGetTime());
 
 	while (!glfwWindowShouldClose(window_)) {
-		// デルタタイムの計算
 		float currentTime = static_cast<float>(glfwGetTime());
 		float deltaTime   = currentTime - lastTime;
 		lastTime          = currentTime;
 
-		// 更新コールバック
-		if (updateCallback_) {
-			updateCallback_(deltaTime);
-		}
-
-		// 描画コールバック
-		if (renderCallback_) {
-			renderCallback_();
-		}
+		updateCallback(deltaTime);
+		renderCallback();
 
 		glfwSwapBuffers(window_);
 		glfwPollEvents();

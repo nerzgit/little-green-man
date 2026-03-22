@@ -3,8 +3,8 @@
 #include "../../engine/graphics/Renderer.hpp"
 #include <utility>
 
-SceneManager::SceneManager(int windowWidth, int windowHeight)
-    : windowWidth_(windowWidth), windowHeight_(windowHeight) {
+SceneManager::SceneManager(int windowWidth, int windowHeight, std::unique_ptr<Scene> initialScene)
+    : windowWidth_(windowWidth), windowHeight_(windowHeight), current_(std::move(initialScene)) {
 }
 
 void SceneManager::switchTo(std::unique_ptr<Scene> scene) {

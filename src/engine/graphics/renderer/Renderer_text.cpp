@@ -1,6 +1,6 @@
 #include "../Renderer.hpp"
 
-#include "../FontAtlas.hpp"
+#include "../../font/FontAtlas.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 
 // UTF-8 文字列から次の codepoint を取得し、ポインタを進める

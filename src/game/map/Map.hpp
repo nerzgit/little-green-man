@@ -2,9 +2,9 @@
 #define MAP_HPP
 
 #include "../../engine/core/Entity.hpp"
-#include "../ColorOverlay.hpp"
+#include "../effect/ColorOverlay.hpp"
 #include "../IDrawableSource.hpp"
-#include "../ParallaxOverlay.hpp"
+#include "../effect/ParallaxOverlay.hpp"
 #include "TilesetLoader.hpp"
 #include <glm/glm.hpp>
 #include <memory>
@@ -37,7 +37,8 @@ public:
 	}
 
 	int  getActivatedReceiverCount() const;
-	void drawEffects(Renderer& renderer, int windowWidth, int windowHeight, float cameraX) const;
+	void drawEffects(Renderer& renderer, int windowWidth, int windowHeight,
+	                 float cameraX, float playerY) const;
 	bool      isWallAt(float x, float y) const;
 	bool      isTriggerAt(float x, float y) const;
 	bool      isMirrorAt(float x, float y) const;

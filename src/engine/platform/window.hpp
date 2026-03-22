@@ -13,9 +13,8 @@ public:
 	Window(int width, int height, const char *title);
 	~Window();
 
-	void        run();
-	void        setUpdateCallback(std::function<void(float)> callback);
-	void        setRenderCallback(std::function<void()> callback);
+	void run(std::function<void(float)> updateCallback,
+	         std::function<void()>      renderCallback);
 	GLFWwindow *getGLFWWindow() {
 		return window_;
 	}
@@ -30,8 +29,6 @@ private:
 	GLFWwindow                *window_;
 	int                        width_;
 	int                        height_;
-	std::function<void(float)> updateCallback_;
-	std::function<void()>      renderCallback_;
 
 	void        initGlfw();
 	void        initGlfwWindow(int width, int height, const char *title);

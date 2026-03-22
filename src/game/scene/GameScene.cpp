@@ -1,28 +1,19 @@
 #include "GameScene.hpp"
 
-#include "../../engine/graphics/FontAtlas.hpp"
 #include "../../engine/graphics/Renderer.hpp"  // glad を GLFW より先に
 #include "../../engine/input/InputManager.hpp" // GLFW/glfw3.h
-#include "../../engine/ui/DialogueBox.hpp"
 #include "../camera/Camera.hpp"
 #include "../map/world1/Map1_1.hpp"
 #include "../physics/CollisionResolver.hpp"
 #include "../player/Player.hpp"
+#include "../ui/SpeechBubble.hpp"
 #include "GameOverScene.hpp"
 #include "SceneManager.hpp"
 #include <algorithm>
 
 GameScene::GameScene(int windowWidth, int windowHeight)
     : windowWidth_(windowWidth), windowHeight_(windowHeight) {
-	/**
-	 * ゲームシステム全体で使うフォント
-	 */
-	font_ = std::make_unique<FontAtlas>(kFontName, kFontSize, kFontAtlasSize);
-
-	/**
-	 * 会話ボックス
-	 */
-	dialogueBox_ = std::make_unique<DialogueBox>(windowWidth, windowHeight);
+	SpeechBubble::init(windowWidth, windowHeight);
 
 	/**
 	 * プレイヤーの初期座標
@@ -83,7 +74,7 @@ void GameScene::update(float deltaTime, SceneManager& sm) {
 	}
 
 	// 会話ボックスの更新（文字送りや閉じる操作の受付）
-	dialogueBox_->update(deltaTime);
+	SpeechBubble::update(deltaTime);
 
 	/**
 	 * ストーリーの更新
@@ -92,7 +83,7 @@ void GameScene::update(float deltaTime, SceneManager& sm) {
 	 * - マップ遷移のリクエスト
 	 * これ以外に増えたら都度追加する
 	 */
-	StoryContext storyCtx{*player_, *dialogueBox_, storyFlags_,
+	StoryContext storyCtx{*player_, storyFlags_,
 	                      currentMap_->getActivatedReceiverCount()};
 	storyManager_.update(deltaTime, storyCtx);
 
@@ -107,9 +98,9 @@ void GameScene::update(float deltaTime, SceneManager& sm) {
 	}
 
 	/**
-	 * ストーリー実行中（会話・演出）はプレイヤー操作をブロック
+	 * メッセージ表示中はプレイヤー操作をブロック
 	 */
-	if (storyManager_.isBlocking())
+	if (SpeechBubble::isBlocking())
 		return;
 
 	player_->update(deltaTime);
@@ -137,10 +128,9 @@ void GameScene::drawYSorted(Renderer& renderer) {
 	if (player_->active)
 		drawables.push_back(
 		  {player_->position.y, [&](Renderer& r) { player_->draw(r); }});
-	std::sort(drawables.begin(), drawables.end(),
-	          [](const Drawable& a, const Drawable& b) {
-		          return a.sortY < b.sortY;
-	          });
+	std::sort(
+	  drawables.begin(), drawables.end(),
+	  [](const Drawable& a, const Drawable& b) { return a.sortY < b.sortY; });
 	for (auto& d : drawables)
 		d.draw(renderer);
 }
@@ -153,8 +143,8 @@ void GameScene::render(Renderer& renderer) {
 	drawYSorted(renderer);
 	currentMap_->draw(renderer, DrawLayer::Foreground);
 	currentMap_->drawEffects(renderer, windowWidth_, windowHeight_,
-	                         camera_->getPosition().x);
+	                         camera_->getPosition().x, player_->position.y);
 
 	// HUD層: ワールド描画の後に重ねる
-	dialogueBox_->draw(renderer, *font_);
+	SpeechBubble::draw(renderer);
 }

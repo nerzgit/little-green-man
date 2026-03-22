@@ -20,7 +20,6 @@ Player::Player() : Entity(glm::vec2(0, 0), 64.0f), speed(200.0f) {
 	idle.frameDuration = 1.0f;
 	idle.frames.push_back(sheet.frame(0, 0));
 	idle.frames.push_back(sheet.frame(1, 0));
-	idle.frames.push_back(sheet.frame(2, 0));
 	sprite_->addAnimation("idle", std::move(idle));
 
 	Animation walkRight;

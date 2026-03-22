@@ -1,7 +1,7 @@
 #ifndef GAME_OVER_SCENE_HPP
 #define GAME_OVER_SCENE_HPP
 
-#include "../../engine/graphics/FontAtlas.hpp"
+#include "../../engine/font/FontAtlas.hpp"
 #include "Scene.hpp"
 #include <memory>
 

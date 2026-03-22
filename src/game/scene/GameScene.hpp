@@ -10,8 +10,6 @@
 
 class Camera;
 class CollisionResolver;
-class DialogueBox;
-class FontAtlas;
 class Map;
 class Player;
 
@@ -34,16 +32,9 @@ private:
 	std::unique_ptr<Map>               currentMap_;
 	std::unique_ptr<CollisionResolver> collision_;
 	std::unique_ptr<Camera>            camera_;
-	std::unique_ptr<FontAtlas>         font_;
-	std::unique_ptr<DialogueBox>       dialogueBox_;
 
 	StoryManager                    storyManager_;
 	std::unordered_set<std::string> storyFlags_;
-
-	static constexpr const char* kFontName =
-	  "assets/fonts/PixelMplus12-Regular.ttf";
-	static constexpr float kFontSize      = 24.0f;
-	static constexpr int   kFontAtlasSize = 2048;
 };
 
 #endif // GAME_SCENE_HPP

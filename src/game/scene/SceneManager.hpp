@@ -8,7 +8,7 @@ class Renderer;
 
 class SceneManager {
 public:
-	SceneManager(int windowWidth, int windowHeight);
+	SceneManager(int windowWidth, int windowHeight, std::unique_ptr<Scene> initialScene = nullptr);
 
 	// 次のフレームで遷移するシーンを予約する
 	void switchTo(std::unique_ptr<Scene> scene);

@@ -96,12 +96,17 @@ void Renderer::drawParallaxHUD(const Texture& texture, int texWidth,
 	float texW = static_cast<float>(texWidth);
 	float h    = static_cast<float>(windowHeight);
 
-	// 頂点幅はテクスチャ幅、projection はウィンドウサイズ
+	float centerX    = winW / 2.0f;
+	float halfW      = texW / 2.0f;
+	float left       = centerX - halfW;
+	float right      = centerX + halfW;
 	float u0         = uvOffsetX;
 	float u1         = uvOffsetX + 1.0f;
 	float vertices[] = {
-	  0.0f, 0.0f, u0, 0.0f, texW, 0.0f, u1, 0.0f,
-	  texW, h,    u1, 1.0f, 0.0f, h,    u0, 1.0f,
+	  left,  0.0f, u0, 0.0f,
+	  right, 0.0f, u1, 0.0f,
+	  right, h,    u1, 1.0f,
+	  left,  h,    u0, 1.0f,
 	};
 
 	glm::mat4 hudProjection = glm::ortho(0.0f, winW, winH, 0.0f);

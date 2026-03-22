@@ -1,7 +1,7 @@
 #include "DialogueBox.hpp"
 
 // glad を GLFW より先に
-#include "../graphics/FontAtlas.hpp"
+#include "../font/FontAtlas.hpp"
 #include "../graphics/Renderer.hpp"
 #include "../input/InputManager.hpp"
 

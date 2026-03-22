@@ -1,6 +1,6 @@
 #include "FontAtlas.hpp"
 
-#include "Texture.hpp"
+#include "../graphics/Texture.hpp"
 
 // stb_truetype はヘッダーオンリーライブラリ。
 // このマクロを定義した翻訳単位（.cpp）でだけ実装コードが展開される。

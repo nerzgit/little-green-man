@@ -59,10 +59,10 @@ int Map::getActivatedReceiverCount() const {
 }
 
 void Map::drawEffects(Renderer& renderer, int windowWidth, int windowHeight,
-                      float cameraX) const {
+                      float cameraX, float playerY) const {
 	lightSystem_->draw(renderer);
 	lightSystem_->drawOverlay(renderer, windowWidth, windowHeight);
-	parallaxOverlay_.draw(renderer, windowWidth, windowHeight, cameraX);
+	parallaxOverlay_.draw(renderer, windowWidth, windowHeight, cameraX, playerY);
 	colorOverlay_.draw(renderer, windowWidth, windowHeight);
 }
 
