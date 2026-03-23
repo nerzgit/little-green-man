@@ -20,13 +20,10 @@ void World::loadMap(std::unique_ptr<Map> map) {
 	player_->position = currentMap_->getPlayerSpawnPosition();
 	player_->velocity = glm::vec2(0, 0);
 
-	const float stageWidth  = currentMap_->getPixelWidth();
-	const float stageHeight = currentMap_->getPixelHeight();
-
-	collision_ = std::make_unique<CollisionResolver>(*player_, *currentMap_,
-	                                                 stageWidth, stageHeight);
+	collision_ = std::make_unique<CollisionResolver>(*player_, *currentMap_);
 	camera_    = std::make_unique<Camera>(*player_, windowWidth_, windowHeight_,
-	                                      stageWidth, stageHeight);
+	                                      currentMap_->getPixelWidth(),
+	                                      currentMap_->getPixelHeight());
 }
 
 Player&            World::player()    { return *player_; }

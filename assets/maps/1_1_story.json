@@ -12,16 +12,6 @@
           ]
         }
       ]
-    },
-    {
-      "id": "map1_1_receiver_clear",
-      "once": true,
-      "trigger": { "type": "receiver_count", "count": 8 },
-      "actions": [
-        {
-          "type": "next_map"
-        }
-      ]
     }
   ]
 }

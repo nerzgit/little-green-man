@@ -1,0 +1,11 @@
+{
+  "tileset": "assets/maps/[Base]BaseChip_pipo.png",
+  "layers": [
+    { "csv": "assets/maps/1-2_player.csv",        "type": "player_spawn", "draw": "background" },
+    { "csv": "assets/maps/1-2_地面.csv",           "type": "empty",        "draw": "background" },
+    { "csv": "assets/maps/1-2_enemies.csv",        "type": "enemy_spawn",  "draw": "background" },
+    { "csv": "assets/maps/1-2_オブジェクト後面.csv", "type": "empty",       "draw": "background" },
+    { "csv": "assets/maps/1-2_オブジェクト前面.csv", "type": "empty",       "draw": "foreground" },
+    { "csv": "assets/maps/1-2_壁.csv",             "type": "wall",         "draw": "foreground" }
+  ]
+}

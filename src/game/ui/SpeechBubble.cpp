@@ -33,7 +33,9 @@ void SpeechBubble::draw(Renderer& renderer) {
 	dialogueBox_->draw(renderer, FontManager::getInstance().getDefaultFont());
 }
 
-bool SpeechBubble::isBlocking() {
-	if (!dialogueBox_) return false;
-	return dialogueBox_->isVisible() || !messageQueue_.empty();
+SpeechBubble::State SpeechBubble::getState() {
+	if (!dialogueBox_) return State::Idle;
+	return (dialogueBox_->isVisible() || !messageQueue_.empty())
+	         ? State::Blocking
+	         : State::Idle;
 }

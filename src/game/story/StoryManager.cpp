@@ -11,6 +11,8 @@
 
 #include "StoryManager.hpp"
 
+#include "../player/Player.hpp"
+#include "StoryContext.hpp"
 #include "action/ActionParser.hpp"
 #include "trigger/MapLoadTrigger.hpp"
 #include "trigger/TriggerParser.hpp"
@@ -51,7 +53,8 @@ void StoryManager::load(const std::string& jsonPath) {
 	}
 }
 
-void StoryManager::update(float dt, StoryContext& ctx) {
+void StoryManager::update(float dt, Player& player) {
+	StoryContext ctx{player, flags_};
 	// アクション実行中はトリガーチェックしない（割り込み防止）
 	if (!actionQueue_.isEmpty()) {
 		actionQueue_.update(dt, ctx);
@@ -77,4 +80,13 @@ void StoryManager::update(float dt, StoryContext& ctx) {
 	}
 
 	actionQueue_.update(dt, ctx);
+
+	if (ctx.mapTransitionRequested)
+		pendingEvent_ = Event::NextMap;
+}
+
+StoryManager::Event StoryManager::captureEvent() {
+	Event e    = pendingEvent_;
+	pendingEvent_ = Event::None;
+	return e;
 }

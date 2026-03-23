@@ -1,164 +1,161 @@
 #include "Map.hpp"
 
 #include "../../engine/graphics/Renderer.hpp"
-#include "../World.hpp"
-#include "../camera/Camera.hpp"
 #include "../GameConstants.hpp"
 #include "../enemy/EnemySystem.hpp"
-#include "../light/LightSystem.hpp"
 #include "../player/Player.hpp"
-#include "MapLoader.hpp"
-#include <memory>
+#include <fstream>
+#include <nlohmann/json.hpp>
+#include <stdexcept>
+
+using json = nlohmann::json;
+
+// -----------------------------------------------------------------------------
+//  JSON ファクトリ
+// -----------------------------------------------------------------------------
+
+static TileType parseTileType(const std::string& s) {
+	if (s == "wall")         return TileType::WALL;
+	if (s == "player_spawn") return TileType::PLAYER_SPAWN;
+	if (s == "enemy_spawn")  return TileType::ENEMY_SPAWN;
+	return TileType::EMPTY;
+}
+
+static DrawLayer parseDrawLayer(const std::string& s) {
+	if (s == "foreground") return DrawLayer::Foreground;
+	return DrawLayer::Background;
+}
+
+std::unique_ptr<Map> Map::load(const std::string& jsonPath) {
+	std::ifstream f(jsonPath);
+	if (!f.is_open())
+		throw std::runtime_error("Map file not found: " + jsonPath);
+
+	const json root = json::parse(f);
+	auto map = std::make_unique<Map>();
+
+	for (const auto& layer : root.at("layers")) {
+		map->loadLayer(
+		  layer.at("csv").get<std::string>(),
+		  parseTileType(layer.at("type").get<std::string>()),
+		  parseDrawLayer(layer.at("draw").get<std::string>()));
+	}
+
+	map->loadTileset(root.at("tileset").get<std::string>());
+	map->nextMapPath_ = root.value("next_map", "");
+	map->storyPath_   = root.value("story",    "");
+
+	return map;
+}
+
+// -----------------------------------------------------------------------------
 
 Map::Map()
-    : lightSystem_(std::make_unique<LightSystem>())
-    , enemySystem_(std::make_unique<EnemySystem>()) {
-	drawableSources_ = {enemySystem_.get(), lightSystem_.get()};
-};
+    : enemySystem_(std::make_unique<EnemySystem>()) {
+}
 
 Map::~Map() = default;
 
 void Map::start() {
-	if (mapLayers_.empty())
-		return;
-
-	const float ts          = GameConstants::kTileSize;
-	const float stageWidth  = getPixelWidth();
-	const float stageHeight = getPixelHeight();
-
-	std::vector<glm::vec2> spawnPositions;
-	for (const auto& layer : mapLayers_) {
-		for (const auto& [col, row] : layer.loader->getEnemySpawns()) {
-			spawnPositions.emplace_back(col * ts + ts / 2.0f,
-			                            row * ts + ts / 2.0f);
-		}
-	}
-	enemySystem_->spawnFrom(spawnPositions, stageWidth, stageHeight, *this);
+	enemySystem_->spawnFrom(getEnemySpawnPositions(), *this);
 }
 
 MapEvent Map::update(float deltaTime, Player& player) {
 	if (enemySystem_->update(deltaTime, player))
 		return MapEvent::PlayerDead;
-	lightSystem_->update(deltaTime, *this);
-	lightSystem_->trace(*this);
 	return MapEvent::None;
 }
 
-void Map::loadMap(const std::string& csvPath,
-                  TileType           defaultType,
-                  DrawLayer          drawLayer) {
-	auto ml = std::make_unique<MapLoader>();
-	ml->loadMap(csvPath, defaultType);
-	mapLayers_.push_back({std::move(ml), drawLayer});
+// -----------------------------------------------------------------------------
+//  タイルレイヤー管理
+// -----------------------------------------------------------------------------
+
+void Map::loadLayer(const std::string& csvPath, TileType defaultType,
+                    DrawLayer drawLayer) {
+	auto loader = std::make_unique<MapLoader>();
+	loader->loadMap(csvPath, defaultType);
+	layers_.push_back({std::move(loader), drawLayer});
 }
 
 void Map::loadTileset(const std::string& tilesetPath) {
 	tileset_ = std::make_unique<TilesetLoader>(tilesetPath);
 }
 
-int Map::getActivatedReceiverCount() const {
-	return lightSystem_->getActivatedReceiverCount();
-}
-
-void Map::drawEffects(Renderer& renderer, World& world) const {
-	lightSystem_->draw(renderer);
-	lightSystem_->drawOverlay(renderer, world.windowWidth(), world.windowHeight());
-	parallaxOverlay_.draw(renderer, world.windowWidth(), world.windowHeight(),
-	                      world.camera().getPosition().x, world.player().position.y);
-	colorOverlay_.draw(renderer, world.windowWidth(), world.windowHeight());
-}
-
-void Map::collectDrawables(std::vector<Drawable>& out) {
-	for (auto* src : drawableSources_)
-		src->collectDrawables(out);
-}
-
 void Map::draw(Renderer& renderer, DrawLayer layer) {
-	if (!tileset_) {
+	if (!tileset_)
 		throw std::runtime_error("Tileset not loaded");
-	}
-	for (const auto& ml : mapLayers_) {
-		if (ml.drawLayer != layer)
+	for (const auto& l : layers_) {
+		if (l.drawLayer != layer)
 			continue;
-		tileset_->draw(renderer, *ml.loader, GameConstants::kTileSize);
+		tileset_->draw(renderer, *l.loader, GameConstants::kTileSize);
 	}
 }
 
-bool Map::isMirrorAt(float x, float y) const {
-	return lightSystem_->isMirrorAt({x, y});
-}
-
-void Map::resolvePush(Entity& pusher) {
-	const float ts = GameConstants::kTileSize;
-	const float r  = pusher.size / 2.0f;
-	glm::vec2&  pos = pusher.position;
-
-	// 左エッジがミラーに入ったら左に押し出し試行
-	if (isMirrorAt(pos.x - r, pos.y)) {
-		if (!lightSystem_->tryPush({pos.x - r, pos.y}, {-1, 0}, *this)) {
-			int col = static_cast<int>((pos.x - r) / ts);
-			pos.x   = (col + 1) * ts + r;
-		}
-	}
-	// 右エッジ
-	if (isMirrorAt(pos.x + r, pos.y)) {
-		if (!lightSystem_->tryPush({pos.x + r, pos.y}, {1, 0}, *this)) {
-			int col = static_cast<int>((pos.x + r) / ts);
-			pos.x   = col * ts - r;
-		}
-	}
-	// 上エッジ
-	if (isMirrorAt(pos.x, pos.y - r)) {
-		if (!lightSystem_->tryPush({pos.x, pos.y - r}, {0, -1}, *this)) {
-			int row = static_cast<int>((pos.y - r) / ts);
-			pos.y   = (row + 1) * ts + r;
-		}
-	}
-	// 下エッジ
-	if (isMirrorAt(pos.x, pos.y + r)) {
-		if (!lightSystem_->tryPush({pos.x, pos.y + r}, {0, 1}, *this)) {
-			int row = static_cast<int>((pos.y + r) / ts);
-			pos.y   = row * ts - r;
-		}
-	}
-}
+// -----------------------------------------------------------------------------
+//  タイル判定
+// -----------------------------------------------------------------------------
 
 bool Map::isWallAt(float x, float y) const {
-	for (const auto& layer : mapLayers_) {
-		if (layer.loader->isWallAt(x, y))
+	for (const auto& l : layers_) {
+		if (l.loader->isWallAt(x, y))
 			return true;
 	}
 	return false;
 }
 
 bool Map::isTriggerAt(float x, float y) const {
-	for (const auto& layer : mapLayers_) {
-		if (layer.loader->isTriggerAt(x, y))
+	for (const auto& l : layers_) {
+		if (l.loader->isTriggerAt(x, y))
 			return true;
 	}
 	return false;
 }
 
+// -----------------------------------------------------------------------------
+//  マップサイズ・スポーン位置
+// -----------------------------------------------------------------------------
+
+float Map::getPixelWidth() const {
+	return layers_.empty() ? 0.0f :
+	       layers_[0].loader->getWidth() * GameConstants::kTileSize;
+}
+
+float Map::getPixelHeight() const {
+	return layers_.empty() ? 0.0f :
+	       layers_[0].loader->getHeight() * GameConstants::kTileSize;
+}
+
 glm::vec2 Map::getPlayerSpawnPosition() const {
 	const float ts = GameConstants::kTileSize;
-	for (const auto& ml : mapLayers_) {
-		if (ml.loader->hasPlayerSpawn()) {
-			const float col = static_cast<float>(ml.loader->getPlayerSpawnCol());
-			const float row = static_cast<float>(ml.loader->getPlayerSpawnRow());
+	for (const auto& l : layers_) {
+		if (l.loader->hasPlayerSpawn()) {
+			const float col = static_cast<float>(l.loader->getPlayerSpawnCol());
+			const float row = static_cast<float>(l.loader->getPlayerSpawnRow());
 			return {col * ts + ts / 2.0f, row * ts + ts / 2.0f};
 		}
 	}
 	return {};
 }
 
-float Map::getPixelWidth() const {
-	return mapLayers_.empty() ?
-	         0.0f :
-	         mapLayers_[0].loader->getWidth() * GameConstants::kTileSize;
+std::vector<glm::vec2> Map::getEnemySpawnPositions() const {
+	const float            ts = GameConstants::kTileSize;
+	std::vector<glm::vec2> positions;
+	for (const auto& l : layers_) {
+		for (const auto& [col, row] : l.loader->getEnemySpawns()) {
+			positions.emplace_back(col * ts + ts / 2.0f, row * ts + ts / 2.0f);
+		}
+	}
+	return positions;
 }
 
-float Map::getPixelHeight() const {
-	return mapLayers_.empty() ?
-	         0.0f :
-	         mapLayers_[0].loader->getHeight() * GameConstants::kTileSize;
+// -----------------------------------------------------------------------------
+
+const EnemySystem& Map::enemySystem() const { return *enemySystem_; }
+
+std::unique_ptr<Map> Map::createNextMap() const {
+	if (nextMapPath_.empty())
+		return nullptr;
+	return Map::load(nextMapPath_);
 }
+
+const std::string& Map::getStoryPath() const { return storyPath_; }

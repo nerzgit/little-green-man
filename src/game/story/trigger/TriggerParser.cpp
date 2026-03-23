@@ -17,10 +17,6 @@ std::unique_ptr<Trigger> parseTrigger(const nlohmann::json& j) {
 	if (type == "flag") {
 		return std::make_unique<FlagTrigger>(j.at("flag").get<std::string>());
 	}
-	if (type == "receiver_count") {
-		return std::make_unique<ReceiverCountTrigger>(
-		    j.at("count").get<int>());
-	}
 	if (type == "and") {
 		std::vector<std::unique_ptr<Trigger>> conditions;
 		for (const auto& c : j.at("conditions")) {

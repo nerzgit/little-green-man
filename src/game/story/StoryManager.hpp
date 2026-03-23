@@ -2,31 +2,38 @@
 #define STORY_MANAGER_HPP
 
 #include "ActionQueue.hpp"
-#include "StoryContext.hpp"
 #include "StoryEvent.hpp"
 #include <string>
+#include <unordered_set>
 #include <vector>
+
+class Player;
 
 // ストーリーシステムの中心。JSON を読み込み、毎フレーム
 // トリガーを監視してアクションを実行する。
 //
-// GameScene は storyManager_->update() と isBlocking() だけ知っていればよい。
+// GameScene は load() / update() / isBlocking() / captureEvent() だけ知っていればよい。
 class StoryManager {
 public:
+	enum class Event { None, NextMap };
+
 	// マップ切り替え時に呼ぶ。JSONがなければイベントをクリアするだけ。
 	void load(const std::string& jsonPath);
 
 	// 毎フレーム GameScene から呼ぶ
-	void update(float dt, StoryContext& ctx);
+	void update(float dt, Player& player);
 
 	// true の間はプレイヤー操作をブロックすること
 	bool isBlocking() const { return !actionQueue_.isEmpty(); }
 
-private:
-	std::vector<StoryEvent> events_;
-	ActionQueue             actionQueue_;
+	// 発生中のイベントを取り出す。呼び出すと None にリセットされる
+	Event captureEvent();
 
-	// JSON解析はStoryManager.cppの無名名前空間に閉じ込め、ヘッダを汚さない
+private:
+	std::vector<StoryEvent>         events_;
+	ActionQueue                     actionQueue_;
+	std::unordered_set<std::string> flags_;
+	Event                           pendingEvent_ = Event::None;
 };
 
 #endif // STORY_MANAGER_HPP

@@ -1,0 +1,15 @@
+{
+  "tileset":  "assets/maps/merged.png",
+  "story":    "assets/maps/1_1_story.json",
+  "next_map": "assets/maps/map1_2.json",
+  "layers": [
+    { "csv": "assets/maps/1-3_床.csv",          "type": "empty",        "draw": "background" },
+    { "csv": "assets/maps/1-3_壁.csv",           "type": "wall",         "draw": "background" },
+    { "csv": "assets/maps/1-3_オブジェクト後面.csv", "type": "empty",    "draw": "background" },
+    { "csv": "assets/maps/1-2_player.csv",       "type": "player_spawn", "draw": "foreground" },
+    { "csv": "assets/maps/1-3_オブジェクト.csv",  "type": "empty",       "draw": "foreground" },
+    { "csv": "assets/maps/1-3_オブジェクト2.csv", "type": "empty",       "draw": "foreground" },
+    { "csv": "assets/maps/1-3_壺.csv",           "type": "empty",        "draw": "foreground" },
+    { "csv": "assets/maps/1-3_ゴール.csv",        "type": "empty",       "draw": "background" }
+  ]
+}

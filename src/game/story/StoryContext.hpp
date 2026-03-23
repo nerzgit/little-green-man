@@ -11,7 +11,6 @@ class Player;
 struct StoryContext {
 	Player&                          player;
 	std::unordered_set<std::string>& flags;       // ストーリーフラグ（set_flag で立てる）
-	int                              activatedReceiverCount = 0; // 受信済みレシーバー数
 	bool mapTransitionRequested = false;          // next_map アクションが立てる
 };
 

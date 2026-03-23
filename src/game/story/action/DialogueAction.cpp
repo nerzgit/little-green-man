@@ -11,7 +11,7 @@ void DialogueAction::start(StoryContext&) {
 }
 
 void DialogueAction::update(float, StoryContext&) {
-	if (!finished_ && !SpeechBubble::isBlocking()) {
+	if (!finished_ && SpeechBubble::getState() == SpeechBubble::State::Idle) {
 		finished_ = true;
 	}
 }

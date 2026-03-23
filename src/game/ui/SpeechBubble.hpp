@@ -14,6 +14,8 @@ class SpeechBubble {
 public:
 	SpeechBubble() = delete;
 
+	enum class State { Idle, Blocking };
+
 	// GameScene の初期化時に1度だけ呼ぶ
 	static void init(int windowWidth, int windowHeight);
 
@@ -24,9 +26,8 @@ public:
 	static void update(float deltaTime);
 	static void draw(Renderer& renderer);
 
-	// キューに残りがある、または表示中のメッセージがある場合に true
-	// ゲームの一時停止判定に使う
-	static bool isBlocking();
+	// キューに残りがある、または表示中のメッセージがある場合 Blocking
+	static State getState();
 
 private:
 	static std::unique_ptr<DialogueBox> dialogueBox_;
