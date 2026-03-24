@@ -1,17 +1,18 @@
-#include "TilesetLoader.hpp"
+#include "Tileset.hpp"
 
 #include "../../engine/graphics/Renderer.hpp"
 #include "../../engine/graphics/TextureCache.hpp"
 #include "../GameConstants.hpp"
-#include "MapLoader.hpp"
+#include "MapCsvLoader.hpp"
+#include "TilePicker.hpp"
 
-TilesetLoader::TilesetLoader(const std::string& tilesetPath)
+Tileset::Tileset(const std::string& tilesetPath)
     : tileset_(TextureCache::get(tilesetPath)) {
 	tilesetCols_ = tileset_->width / GameConstants::kTilePixels;
 }
 
-void TilesetLoader::draw(Renderer& renderer, const MapLoader& mapLoader,
-                         float displaySize) const {
+void Tileset::draw(Renderer& renderer, const MapCsvLoader& mapLoader,
+                   float displaySize) const {
 	const float ts      = displaySize;
 	const float srcSize = static_cast<float>(GameConstants::kTilePixels);
 	const float texW    = static_cast<float>(tileset_->width);
@@ -19,10 +20,10 @@ void TilesetLoader::draw(Renderer& renderer, const MapLoader& mapLoader,
 
 	for (int row = 0; row < mapLoader.getHeight(); ++row) {
 		for (int col = 0; col < mapLoader.getWidth(); ++col) {
-			if (mapLoader.getTileType(col, row) == TileType::WALL)
+			if (TilePicker::getTileType(mapLoader, col, row) == TileType::WALL)
 				continue;
 
-			int idx = mapLoader.getTile(col, row).id;
+			int idx = TilePicker::getTile(mapLoader, col, row).id;
 			if (idx == -1)
 				continue;
 

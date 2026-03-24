@@ -100,7 +100,7 @@ void GameScene::update(float deltaTime, SceneManager& sm) {
 
 	updatePhysics(deltaTime);
 
-	if (world_.map().update(deltaTime, world_.player()) == MapEvent::PlayerDead)
+	if (world_.update(deltaTime))
 		sm.switchTo(std::make_unique<GameOverScene>(sm.getWindowWidth(),
 		                                            sm.getWindowHeight()));
 }
@@ -119,7 +119,7 @@ void GameScene::render(Renderer& renderer) {
 	using DrawFn = std::function<void(Renderer&)>;
 	std::vector<std::pair<float, DrawFn>> drawList;
 
-	for (const auto& e : world_.map().enemySystem().enemies())
+	for (const auto& e : world_.enemySystem().enemies())
 		drawList.push_back({e->position.y, [ep = e.get()](Renderer& r) { ep->draw(r); }});
 
 	if (world_.player().active)

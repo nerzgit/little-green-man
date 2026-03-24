@@ -1,19 +1,20 @@
 #ifndef MAP_HPP
 #define MAP_HPP
 
-#include "MapLoader.hpp"
-#include "TilesetLoader.hpp"
+#include "../CharacterType.hpp"
+#include "MapLayer.hpp"
+#include "Tileset.hpp"
 #include <glm/glm.hpp>
 #include <memory>
 #include <string>
 #include <vector>
 
 class Renderer;
-class Player;
-class EnemySystem;
 
-enum class DrawLayer { Background, Foreground };
-enum class MapEvent  { None, PlayerDead };
+struct MapSize {
+	float width;
+	float height;
+};
 
 class Map {
 public:
@@ -23,36 +24,22 @@ public:
 	Map();
 	~Map();
 
-	void     start();
-	MapEvent update(float deltaTime, Player& player);
-	void     draw(Renderer& renderer, DrawLayer layer);
+	void draw(Renderer& renderer, DrawLayer layer);
 
-	bool      isWallAt(float x, float y) const;
-	bool      isTriggerAt(float x, float y) const;
-	float     getPixelWidth() const;
-	float     getPixelHeight() const;
-	glm::vec2 getPlayerSpawnPosition() const;
-
-	const EnemySystem& enemySystem() const;
+	bool      isTileAt(TileType type, float x, float y) const;
+	MapSize   getMapSize() const;
+	glm::vec2              getSpawnPosition(CharacterType type) const;
+	std::vector<glm::vec2> getSpawnPositions(CharacterType type) const;
 
 	// 次マップが存在しない場合は nullptr
 	std::unique_ptr<Map> createNextMap() const;
 	const std::string&   getStoryPath() const;
 
 private:
-	void loadLayer(const std::string& csvPath, TileType defaultType,
-	               DrawLayer drawLayer);
 	void loadTileset(const std::string& tilesetPath);
 
-	std::vector<glm::vec2> getEnemySpawnPositions() const;
-
-	struct Layer {
-		std::unique_ptr<MapLoader> loader;
-		DrawLayer                  drawLayer;
-	};
-	std::vector<Layer>             layers_;
-	std::unique_ptr<TilesetLoader> tileset_;
-	std::unique_ptr<EnemySystem>   enemySystem_;
+	std::vector<MapLayer>    layers_;
+	std::unique_ptr<Tileset> tileset_;
 
 	std::string nextMapPath_;
 	std::string storyPath_;
